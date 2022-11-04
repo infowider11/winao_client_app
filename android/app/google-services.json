@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "830210120680",
+    "project_id": "julio-37e35",
+    "storage_bucket": "julio-37e35.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:830210120680:android:1f80510e26dec45275a25d",
+        "android_client_info": {
+          "package_name": "com.winao_client.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "830210120680-is1e931662gk1kfb91u9e4t75s8q1epu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBE4s-SuYVNFz1py0pbUA_fN1silczpfJ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "830210120680-is1e931662gk1kfb91u9e4t75s8q1epu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:830210120680:android:9bf15be07789a43375a25d",
+        "android_client_info": {
+          "package_name": "com.winao_commission_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "830210120680-is1e931662gk1kfb91u9e4t75s8q1epu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBE4s-SuYVNFz1py0pbUA_fN1silczpfJ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "830210120680-is1e931662gk1kfb91u9e4t75s8q1epu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -76,39 +76,42 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        await showDialog(context: context, builder: (context1){
-          return AlertDialog(
+        if(_selectedIndex==0){
+          await showDialog(context: context, builder: (context1){
+            return AlertDialog(
 
-            title: Text('Exit',),
-            content: Text('Are you sure, want to Exit?'),
-            actions: [
-              TextButton(
-                  onPressed: () async {
-                    // Navigator.pop(context1);
-                    //
-                    // isExit=true;
-                    //         setState(() {
-                    //
-                    //         });
-                    SystemNavigator.pop();
-                  }, child: Text('Exit')),
-              TextButton(onPressed: () async {
+              title: Text('Exit',),
+              content: Text('Are you sure, want to Exit?'),
+              actions: [
+                TextButton(
+                    onPressed: () async {
+                      // Navigator.pop(context1);
+                      //
+                      // isExit=true;
+                      //         setState(() {
+                      //
+                      //         });
+                      SystemNavigator.pop();
+                    }, child: Text('Exit')),
+                TextButton(onPressed: () async {
 
-                Navigator.pop(context1);
-                // isExit=false;
-                // setState(() {
-                //
-                // });
-              }, child: Text('cancel')
-              ),
-            ],
-          );
-        });
+                  Navigator.pop(context1);
+                  // isExit=false;
+                  // setState(() {
+                  //
+                  // });
+                }, child: Text('cancel')
+                ),
+              ],
+            );
+          });
+          return false;
+        }else{
 
-        if(isExit){
-          return true;
-        }
-        else{
+          setState(() {
+            _selectedIndex=0;
+
+          });
           return false;
         }
       },
@@ -202,7 +205,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
             ),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: MyColors.primaryColor,
+          selectedItemColor:Color(0xff004173),
           // backgroundColor: MyColors.primaryColor,
           onTap: onItemTapped,
         ),

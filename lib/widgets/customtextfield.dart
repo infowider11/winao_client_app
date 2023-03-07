@@ -12,9 +12,17 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
   final int? maxLines;
   final Color bgColor;
+  final Color borderColor;
+  final Color? textcolor;
   final double verticalPadding;
+  final double borderradius;
   final String? prefixIcon;
+  final String? suffixIcon;
+
   final TextAlign textAlign;
+  final Function()? onTap;
+  final Function()? suffixAction;
+
 
    CustomTextField({
     Key? key,
@@ -26,10 +34,16 @@ class CustomTextField extends StatelessWidget {
     // this.verticalPadding = false,
     this.obscureText = false,
     this.bgColor = MyColors.whiteColor,
+    this.borderColor = MyColors.primaryColor,
+     this.textcolor,
     this.verticalPadding = 4,
      this.prefixIcon,
+     this.suffixIcon,
      this.textAlign = TextAlign.left,
-     this.enabled
+     this.enabled,
+     this.borderradius=30,
+     this.onTap,
+     this.suffixAction,
   }) : super(key: key);
 
   @override
@@ -40,19 +54,26 @@ class CustomTextField extends StatelessWidget {
           horizontal: horizontalPadding ? 16 : 0, vertical: verticalPadding),
       decoration: BoxDecoration(
           color: bgColor,
-          border: Border.all(color: MyColors.primaryColor),
+          border: Border.all(color: borderColor),
           // border: Border,
-          borderRadius: BorderRadius.circular(30)),
+          borderRadius: BorderRadius.circular(borderradius!)),
       padding: EdgeInsets.only(left: 10),
       child: TextField(
+        // focusNode: FocusNode,
+
         enabled: enabled,
         maxLines: maxLines ?? 1,
         controller: controller,
         obscureText: obscureText,
         textAlign: textAlign,
+        onTap: onTap,
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(fontSize: 16),
+          hintStyle: TextStyle(fontSize: 16 , color: textcolor??null),
+          // focusedBorder: OutlineInputBorder(
+          //     borderRadius: BorderRadius.all(Radius.circular(5.0)),
+          //     borderSide: BorderSide(color: Colors.orange)),
+
           border: InputBorder.none,
           prefixIcon:prefixIcon==null?null:
           Padding(
@@ -62,6 +83,21 @@ class CustomTextField extends StatelessWidget {
               width: 10,
               height: 10,
               fit: BoxFit.fitHeight,
+            ),
+          ),
+          suffixIcon: suffixIcon==null?null:
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: suffixAction,
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Image.asset(
+                suffixIcon!,
+                color: Colors.grey,
+                width: 10,
+                height: 10,
+                fit: BoxFit.fitHeight,
+              ),
             ),
           ),
         ),

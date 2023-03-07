@@ -1,5 +1,5 @@
 class ApiUrls{
-  static const baseUrl = 'https://www.bluediamondresearch.com/WEB01/Winao/api/';
+  static const baseUrl = 'https://wincomis.com/api/';
   // static const String getpaymentMethodFromSecretKey = 'https://api.stripe.com/v1/setup_intents/';
 
 
@@ -45,19 +45,8 @@ class ApiUrls{
   static const delete_address   = baseUrl + 'delete_address';
   static const get_cities   = baseUrl + 'get_cities';
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  static const socialLoginCheck = baseUrl + 'social_login_check';
+  static const markasseen = baseUrl + 'update_seen';
 
 
 

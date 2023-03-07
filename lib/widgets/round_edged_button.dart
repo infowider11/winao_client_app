@@ -5,6 +5,7 @@ class RoundEdgedButton extends StatelessWidget {
   final String text;
   final Function()? onTap;
   final double horizontalMargin;
+  final double? boderRadius;
   final Color? textColor;
   // final Gradient? gradient;
   final bool isSolid;
@@ -15,6 +16,7 @@ class RoundEdgedButton extends StatelessWidget {
       required this.text,
       this.onTap,
         this.horizontalMargin=0,
+        this.boderRadius=30,
         this.textColor=MyColors.primaryColor,
         // required this.hasGradient,
       this.isSolid=true})
@@ -37,7 +39,7 @@ class RoundEdgedButton extends StatelessWidget {
           //         Color(0xFF73E4D9),
           //       ],
           //     ):null,
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(boderRadius!),
           border:isSolid?null: Border.all(color: color),
         ),
         child: Text(
@@ -46,7 +48,7 @@ class RoundEdgedButton extends StatelessWidget {
           style: TextStyle(
               color:isSolid? textColor:color,
             fontSize: 18,
-            fontFamily: 'semibold'
+            fontFamily: 'regular'
           ),
         ),
       ),

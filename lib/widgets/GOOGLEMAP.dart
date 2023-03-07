@@ -34,7 +34,7 @@ class MapSampleState extends State<MapSample> {
   // String? long;
   static late double lat;
   static late double long;
-  static late double currentlat;
+  static late double currentlat ;
   static late double currentlong;
   static late List placemarkaddress;
 
@@ -145,12 +145,19 @@ class MapSampleState extends State<MapSample> {
 
   static final CameraPosition _kLake = CameraPosition(
       bearing: 192.8334901395799,
-      target: LatLng( currentlat, currentlong ),
+      target: LatLng( 37.42796133580664, -122.085749655962 ),
       tilt: 59.440717697143555,
       zoom: 19.151926040649414
   );
 
 
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    mapController?.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -204,6 +211,7 @@ class MapSampleState extends State<MapSample> {
         child: Stack(
           // alignment: Alignment.center,
           children: [
+            // if(currentlat!=null)
             GoogleMap(
                 mapType: MapType.normal,
                 initialCameraPosition: _kGooglePlex,
@@ -398,9 +406,9 @@ class MapSampleState extends State<MapSample> {
       // ),
     );
   }
-
-  Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
-  }
+  //
+  // Future<void> _goToTheLake() async {
+  //   final GoogleMapController controller = await _controller.future;
+  //   controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
+  // }
 }

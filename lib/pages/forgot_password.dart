@@ -26,7 +26,7 @@ class _ForgotpasswordState extends State<Forgotpassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: MyColors.primaryColor,
+        backgroundColor:Color(0xFF004173),
         body:  Stack(
           children: [
             SingleChildScrollView(
@@ -34,20 +34,26 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                 // height: ,
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage(MyImages.signin),
-                      fit: BoxFit.contain,
-                      alignment: Alignment.topLeft
-                  ),
+                  // image: DecorationImage(
+                  //     image: AssetImage(MyImages.signin),
+                  //     fit: BoxFit.contain,
+                  //     alignment: Alignment.topLeft
+                  // ),
                 ),
                 child: Column(
                   children: [
-                    Padding(
-                        padding: EdgeInsets.only(top: 280)
-                    ),
+                    vSizedBox,
+                    Padding(padding: EdgeInsets.only(top: 100)),
+                    Image.asset('assets/images/logo-1..png'),
+                    // Padding(padding: EdgeInsets.only(top: 190)),
+                    // vSizedBox,
+                    // Padding(
+                    //     // padding: EdgeInsets.only(top: 280)
+                    // ),
                     vSizedBox4,
                     MainHeadingText(
-                      text: 'Forgot Password!',
+                      text:'Olvidó su contraseña!',
+
                       color: MyColors.whiteColor,
                       textAlign: TextAlign.center,
                       fontSize: 24,
@@ -55,19 +61,27 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                     ),
                     vSizedBox,
                     ParagraphText(
-                      text: 'Don’t worry just enter the email address',
+                      text: 'No te preocupes solo ingresa la dirección de correo electrónico',
                       color: MyColors.whiteColor,
                       textAlign: TextAlign.center,
                       fontSize: 16,
                       fontFamily: 'regular',
                     ),
                     vSizedBox4,
-                    CustomTextField(controller: emailController, hintText: 'johndoe@gmail.com', prefixIcon: 'assets/images/email.png',),
+                    // CustomTextField(controller: emailController, hintText: 'johndoe@gmail.com', prefixIcon: 'assets/images/email.png',),
+                    CustomTextField(
+                      controller: emailController,
+                      hintText: 'Email',
+                      textcolor:Color(0xFF636363),
+                      // prefixIcon: 'assets/images/user.png',
+                      borderradius: 10,
 
+                    ),
                     vSizedBox2,
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       child: RoundEdgedButton(text: 'Send',
+                        boderRadius: 10,
                         onTap: () async {
                           // Navigator.pushNamed(context, SignInPage.id);
 
@@ -102,36 +116,36 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                 ),
               ),
             ),
-            Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-
-                    children: [
-                      Text('New User? ', style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                      ),
-                      ),
-                      GestureDetector(
-                        onTap: (){
-                          Navigator.pushNamed(context, Signup.id);
-                        },
-                        child:Text('Sign up', style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontFamily: 'semibold'
-                        ),
-                        ),
-                      )
-
-
-                    ],
-                  ),
-                )
-            )
+            // Align(
+            //     alignment: Alignment.bottomCenter,
+            //     child: Container(
+            //       padding: EdgeInsets.symmetric(vertical: 16),
+            //       child: Row(
+            //         mainAxisAlignment: MainAxisAlignment.center,
+            //
+            //         children: [
+            //           Text('New User? ', style: TextStyle(
+            //             color: Colors.white,
+            //             fontSize: 14,
+            //           ),
+            //           ),
+            //           GestureDetector(
+            //             onTap: (){
+            //               Navigator.pushNamed(context, Signup.id);
+            //             },
+            //             child:Text('Sign up', style: TextStyle(
+            //                 color: Colors.white,
+            //                 fontSize: 14,
+            //                 fontFamily: 'semibold'
+            //             ),
+            //             ),
+            //           )
+            //
+            //
+            //         ],
+            //       ),
+            //     )
+            // )
           ],
         )
 

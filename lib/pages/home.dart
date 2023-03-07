@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:convert' as convert;
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as Badge;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:winao_client_app/constants/colors.dart';
@@ -25,7 +25,7 @@ import '../services/webservices.dart';
 import '../widgets/CustomTexts.dart';
 import '../widgets/newloader.dart';
 import 'map.dart';
-import 'package:open_file/open_file.dart';
+
 
 class Home extends StatefulWidget {
   static const String id="home";
@@ -75,16 +75,19 @@ class HomeState extends State<Home> {
   }
 
   notification() async {
-    var user_id = await getCurrentUserId();
-    var res = await Webservices.getData('${ApiUrls.interval_api}?user_id=${user_id}&m=1');
-    log('countnotification---------------111-${res.body}');
-    var jsonResponse = convert.jsonDecode(res.body);
-    countnotification=jsonResponse;
-    // log('countnotification----${countnotification}');
-    // log('countnotification----${countnotification['unreadNotification']}');
-    notificationnumber= countnotification['unreadNotification'];
-    // print('notificationnumber----------${notificationnumber}');
-    // setState((){});
+    if(await isUserLoggedIn()){
+      var user_id = await getCurrentUserId();
+      var res = await Webservices.getData('${ApiUrls.interval_api}?user_id=${user_id}&m=1');
+      log('countnotification---------------111-${res.body}');
+      var jsonResponse = convert.jsonDecode(res.body);
+      countnotification=jsonResponse;
+      // log('countnotification----${countnotification}');
+      // log('countnotification----${countnotification['unreadNotification']}');
+      notificationnumber= countnotification['unreadNotification'];
+      // print('notificationnumber----------${notificationnumber}');
+      // setState((){});
+    }
+
   }
   ordercount() async {
     var user_id=await getCurrentUserId();
@@ -193,21 +196,25 @@ class HomeState extends State<Home> {
         key: scaffoldKey,
         drawer: SideDrawer(scaffoldKey: scaffoldKey,),
         appBar: AppBar(
+
           automaticallyImplyLeading: false,
           title: Text('WINAO', style: TextStyle(fontSize: 16, fontFamily: 'bold', letterSpacing: 1),),
           actions: [
 
 
-            Badge(
+            Badge.Badge(
+              badgeColor: Color(0xff00b7ff),
 
               showBadge:notificationnumber.toString()=='null'||notificationnumber.toString()=='0'?false:true ,
-              position: BadgePosition.topEnd(top: 10, end: 6),
+              position:Badge.BadgePosition.topEnd(top: 10, end: 6),
               // badgeColor: Colors.white,
               badgeContent:Text('${notificationnumber.toString()}',style: TextStyle(color: Colors.white,fontSize: 10)),
               child: IconButton(
                 icon: Image.asset(MyImages.notification, height: 25, color: MyColors.whiteColor,),
                 onPressed: () async{
                  await Navigator.pushNamed(context, NotificationPage.id);
+                  // Map data={};
+                  // print("data------------${data['name']['name']}");
                  refresh();
 
                 },
@@ -221,7 +228,7 @@ class HomeState extends State<Home> {
             //   icon: Image.asset(MyImages.notification, height: 25,),
             // ),
           ],
-          backgroundColor: MyColors.primaryColor,
+          backgroundColor:Color(0xFF004173),
         ),
         body:load?CustomLoader(): Container(
           padding: EdgeInsets.symmetric(horizontal: 16),
@@ -241,10 +248,13 @@ class HomeState extends State<Home> {
                           MyGlobalKeys.tabBarKey.currentState!.onItemTapped(2);
                         },
                         child: Container(
+                          height: 63,
                           padding: EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
-                            color: Color(0xFFD2D3FB),
+                            // color: Color(0xFF00b7ff),
+                            //   color: Color(0xffd5d8da),
                             borderRadius: BorderRadius.circular(5),
+                              border: Border.all(color: Color(0xffbdbdbd))
                           ),
                           child: Row(
                             children: [
@@ -278,7 +288,7 @@ class HomeState extends State<Home> {
                               ),
                               Expanded(
                                 flex: 2,
-                                child: Image.asset(MyImages.Background, height: 35,),
+                                child: Image.network('https://wincomis.com/assets/images/total-orders.png', height: 35,),
                               ),
                             ],
                           ),
@@ -294,10 +304,12 @@ class HomeState extends State<Home> {
                           MyGlobalKeys.tabBarKey.currentState!.onItemTapped(2);
                         },
                         child: Container(
+                          height: 63,
                           padding: EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
-                            color: Color(0xFFFBD2D2),
-                            borderRadius: BorderRadius.circular(5),
+                              // color: Color(0xFF00b7ff),
+                              borderRadius: BorderRadius.circular(5),
+                                border: Border.all(color:Color(0xffbdbdbd))
                           ),
                           child: Row(
                             children: [
@@ -336,7 +348,7 @@ class HomeState extends State<Home> {
                               ),
                               Expanded(
                                 flex: 1,
-                                child: Image.asset(MyImages.Background, height: 30,),
+                                child: Image.network('https://wincomis.com/assets/images/pending-payment-order.png', height: 30,),
                               ),
 
                             ],
@@ -358,10 +370,12 @@ class HomeState extends State<Home> {
                           MyGlobalKeys.tabBarKey.currentState!.onItemTapped(2);
                         },
                         child: Container(
+                          height: 63,
                           padding: EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
-                            color: Color(0xFFD2D3FB),
-                            borderRadius: BorderRadius.circular(5),
+                              // color: Color(0xFF00b7ff),
+                              borderRadius: BorderRadius.circular(5),
+                                border: Border.all(color:Color(0xffbdbdbd))
                           ),
                           child: Row(
                             children: [
@@ -401,7 +415,7 @@ class HomeState extends State<Home> {
                               ),
                               Expanded(
                                 flex: 2,
-                                child: Image.asset(MyImages.Background, height: 30,),
+                                child: Image.network('https://wincomis.com/assets/images/pending-review.png', height: 30,),
                               ),
 
 
@@ -419,10 +433,12 @@ class HomeState extends State<Home> {
                           MyGlobalKeys.tabBarKey.currentState!.onItemTapped(2);
                         },
                         child: Container(
+                          height: 63,
                           padding: EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
-                            color: Color(0xFFFBD2D2),
-                            borderRadius: BorderRadius.circular(5),
+                              // color: Color(0xFF00b7ff),
+                              borderRadius: BorderRadius.circular(5),
+                                border: Border.all(color: Color(0xffbdbdbd))
                           ),
                           child: Row(
                             children: [
@@ -461,7 +477,7 @@ class HomeState extends State<Home> {
                               ),
                               Expanded(
                                 flex: 1,
-                                child: Image.asset(MyImages.Background, height: 30,),
+                                child: Image.network('https://wincomis.com/assets/images/canceller-orders.png', height: 30,),
                               ),
 
                             ],
@@ -471,7 +487,7 @@ class HomeState extends State<Home> {
                     ),
                   ],
                 ),
-                vSizedBox,
+                // vSizedBox,
                 SizedBox(height: 10,),
                 Row(
 
@@ -484,10 +500,12 @@ class HomeState extends State<Home> {
                           MyGlobalKeys.tabBarKey.currentState!.onItemTapped(2);
                         },
                         child: Container(
+                          height: 63,
                           padding: EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
-                            color: Color(0xFFD2D3FB),
-                            borderRadius: BorderRadius.circular(5),
+                              // color: Color(0xFF00b7ff),
+                              borderRadius: BorderRadius.circular(5),
+                                border: Border.all(color: Color(0xffbdbdbd))
                           ),
                           child: Row(
                             children: [
@@ -521,7 +539,7 @@ class HomeState extends State<Home> {
                               ),
                               Expanded(
                                 flex: 2,
-                                child: Image.asset(MyImages.Background, height: 30,),
+                                child: Image.network('https://wincomis.com/assets/images/completed-order.png', height: 30,),
                               ),
 
 
@@ -619,7 +637,7 @@ class HomeState extends State<Home> {
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 16),
                   child: Text('Newly Recommended Orders', style: TextStyle(
-                    color: Colors.black,
+                    color: MyColors.grey,
                     fontSize: 16,
                   ),),
                 ),
@@ -634,7 +652,7 @@ class HomeState extends State<Home> {
                         onTap: (){
                           // Navigator.pushNamed(context, Detail_page.id,);
                           // Navigator.pushReplacement(context,
-                          //     MaterialPageRoute(builder: (context) => Detail_page(productdata:products,)));
+                          //     MaterialPageRoute(builder: (context) => Detail_page(productdata:recomendationproductdata[index], agent_name: '',)));
                         },
                         child:Horizontalcard(
                           orderdetailsdata:recomendationproductdata[index],

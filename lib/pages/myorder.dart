@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as Badge;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:winao_client_app/constants/colors.dart';
@@ -453,9 +453,11 @@ class _MyorderPageState extends State<MyorderPage> {
         actions: [
 
 
-          Badge(
+          Badge.Badge(
+            badgeColor: Color(0xff00b7ff),
+
             showBadge:notificationnumber.toString()=='null'||notificationnumber.toString()=='0'?false:true ,
-            position: BadgePosition.topEnd(top: 10, end: 6),
+            position: Badge.BadgePosition.topEnd(top: 10, end: 6),
             // badgeColor: Colors.white,
             badgeContent:Text('${notificationnumber.toString()}',style: TextStyle(color: Colors.white,fontSize: 10)),
             child: IconButton(
@@ -473,7 +475,7 @@ class _MyorderPageState extends State<MyorderPage> {
           //   icon: Image.asset(MyImages.notification, height: 25,),
           // ),
         ],
-        backgroundColor: MyColors.primaryColor,
+        backgroundColor: Color(0xFF004173),
       ),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 16),
@@ -494,12 +496,12 @@ class _MyorderPageState extends State<MyorderPage> {
                       size: 135.0,
                     ),
                     child: TabBar(
-                      unselectedLabelColor: Color(0xFFF178B6),
+                      unselectedLabelColor: Color(0xFF004173),
                       labelColor: MyColors.whiteColor,
-                      indicatorColor: MyColors.primaryColor,
+                      indicatorColor: Color(0xff00b7ff),
                       indicator:  BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: MyColors.primaryColor,
+                          color: Color(0xFF13b8e8),
 
                       ),
                       // unselectedLabelStyle:,
@@ -510,7 +512,7 @@ class _MyorderPageState extends State<MyorderPage> {
                             width: 150,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              border:Border.all(color: MyColors.primaryColor,)
+                              border:Border.all(color: Color(0xFF13b8e8),)
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -534,7 +536,7 @@ class _MyorderPageState extends State<MyorderPage> {
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 border:Border.all(
-                                  color: MyColors.primaryColor,
+                                  color:Color(0xFF13b8e8),
 
                                 )
                             ),
@@ -559,7 +561,7 @@ class _MyorderPageState extends State<MyorderPage> {
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 border:Border.all(
-                                  color: MyColors.primaryColor,
+                                  color: Color(0xFF13b8e8),
 
                                 )
                             ),

@@ -17,7 +17,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:url_launcher/url_launcher.dart';
+import 'package:winao_client_app/constants/global_keys.dart';
 import 'package:winao_client_app/constants/sized_box.dart';
+import 'package:winao_client_app/pages/bottomnavigation.dart';
 import 'package:winao_client_app/pages/support.dart';
 import 'package:winao_client_app/widgets/CustomTexts.dart';
 import 'package:winao_client_app/widgets/newloader.dart';
@@ -39,7 +41,7 @@ import 'home.dart';
 import 'myorder.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:path/path.dart' as p;
-import 'package:open_file/open_file.dart';
+// import 'package:open_file/open_file.dart';
 class ManageOrdersPage extends StatefulWidget {
   final String orderid;
   // final String refid;
@@ -119,8 +121,15 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
     getorderdetails();
     getbankdetails();
     iserlogin();
+    // markAsSeen();
   }
+  markAsSeen(idd)async{
+    print('${widget.orderid}--seen--------order_id${idd}');
 
+    var id = await getCurrentUserId();
+    var res = await Webservices.getList('${ApiUrls.markasseen}?is_seen=1&recommended_id=${idd}');
+    print('${res}');
+  }
   // PDF DOWNLOAD 2 FUNCTION
 
   pathfunction() {
@@ -219,7 +228,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
     paymentstatus = res['payment_status'];
     print('payment methode------${paymentmethod}');
     print('payment methode------${res}');
-
+    markAsSeen(res['recommendation']['id']);
     setState(() {
       load = false;
     });
@@ -240,7 +249,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
         double.parse(Getorderdetails['grand_total'].toString()) +
             double.parse(Getorderdetails['shipping_cost'].toString());
     Getorderdetails['grand_total_new'] =
-        dis + double.parse(Getorderdetails['grand_total'].toString());
+        (dis + double.parse(Getorderdetails['grand_total'].toString())).toString();
     print('Getorderdetails..........${Getorderdetails['totall']}');
     print('createdate..........${res['created']}');
     orderdate = res['created'];
@@ -587,8 +596,14 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: MyColors.primaryColor,
+        backgroundColor:MyColors.primaryColor,
         title: Text(''),
+        actions: [
+          IconButton(onPressed: (){
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => MyStatefulWidget(key: MyGlobalKeys.tabBarKey,)));
+          }, icon: Icon(Icons.home))
+        ],
       ),
       body: load
           ? CustomLoader()
@@ -664,7 +679,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                 style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
-                                    color: MyColors.primaryColor),
+                                    color:Color(0xff004173)),
                               ),
                             ],
                           ),
@@ -960,7 +975,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                                                             // splashColor: Colors.grey,
                                                                           ),
                                                                         ),
-                                                                        hSizedBox,
+                                                                        // hSizedBox,
                                                                       ],
                                                                     ),
                                                                     // Container(
@@ -1145,7 +1160,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                               if ((paymentstatus == '1') &&
                                   (product[i]['status'].toString() == '2') &&
                                   (product[i]['reviews'].toString() != '0'))
-                              // view reviews button
+                              // viewviews button
                                 GestureDetector(
                                   onTap: () {
                                     print('you press view reviews button');
@@ -1193,13 +1208,15 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                                     '0')
                                                   Row(
                                                     children: [
-                                                      Text(
-                                                        'Rating :',
-                                                        style: TextStyle(
-                                                          fontSize: 18,
-                                                        ),
-                                                      ),
+                                                      // Text(
+                                                      //   'Rating :',
+                                                      //   style: TextStyle(
+                                                      //     fontSize: 18,
+                                                      //   ),
+                                                      // ),
+                                                      vSizedBox,
                                                       RatingBar(
+                                                        itemSize: 25,
                                                           ignoreGestures: true,
                                                           initialRating: double
                                                               .parse(product[i][
@@ -1249,6 +1266,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                                         )
                                                     ],
                                                   ),
+                                                vSizedBox,
                                                 if (product[i]['reviews']
                                                         .toString() !=
                                                     '0')
@@ -1351,11 +1369,11 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                     padding: EdgeInsets.symmetric(
                                         horizontal: 14, vertical: 10),
                                     decoration: BoxDecoration(
-                                        color: MyColors.primaryColor,
+                                        color: Color(0xff00b7ff),
                                         borderRadius:
                                             BorderRadius.circular(10)),
                                     child: Text(
-                                      'View Review',
+                                      'See Review',
                                       style:
                                           TextStyle(color: MyColors.whiteColor),
                                     ),
@@ -1364,7 +1382,8 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
 
                               if ((paymentstatus == '1') &&
                                   (product[i]['status'].toString() == '2') &&
-                                  (product[i]['reviews'].toString() != '0'))
+                                  (product[i]['reviews'].toString() == '0') &&
+                                  (userLoggedIn == true))
                                 hSizedBox,
 
                               if ((paymentstatus == '1') &&
@@ -1727,23 +1746,32 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                                       controller:
                                                           banknameController,
                                                       hintText: 'Bank Name',
+                                                      borderColor: Color(0xff00b7ff),
+                                                      borderradius: 15,
                                                     ),
                                                     CustomTextField(
                                                         controller:
                                                             accountnoController,
                                                         hintText:
-                                                            'Account Number'),
+                                                            'Account Number',
+                                                      borderColor: Color(0xff00b7ff),
+                                                      borderradius: 15,),
                                                     CustomTextField(
+                                                        borderColor: Color(0xff00b7ff),
+                                                        borderradius: 15,
                                                         controller:
                                                             accountholderController,
                                                         hintText:
                                                             'Account Holder'),
                                                     CustomTextField(
+                                                        borderColor: Color(0xff00b7ff),
+                                                        borderradius: 15,
                                                         controller:
                                                             cedularucController,
                                                         hintText:
                                                             'Cedula OR Ruc'),
                                                     Container(
+
                                                       // padding:EdgeInsets.all(10),
                                                       width: double.infinity,
                                                       child: DecoratedBox(
@@ -1751,13 +1779,12 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                                             BoxDecoration(
                                                           // color:Colors.lightGreen, //background color of dropdown button
                                                           border: Border.all(
-                                                              color: MyColors
-                                                                  .primaryColor,
+                                                              color: Color(0xff00b7ff),
                                                               width:
                                                                   1), //border of dropdown button
                                                           borderRadius:
                                                               BorderRadius.circular(
-                                                                  30), //border raiuds of dropdown button
+                                                                  15), //border raiuds of dropdown button
                                                         ),
                                                         child: Container(
                                                           padding:
@@ -1896,8 +1923,8 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                                               .styleFrom(
                                                             shape:
                                                                 StadiumBorder(),
-                                                            primary: MyColors
-                                                                .primaryColor,
+                                                            primary: Color(0xff004173),
+
                                                           ),
                                                         ),
                                                         hSizedBox,
@@ -1925,7 +1952,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                         },
                                       );
                                     },
-                                    child: const Text('Provide Bank Details'),
+                                    child: const Text('Provide Bank Details',style: TextStyle(color: Color(0xff00b7ff)),),
                                   ),
 
                               if (product[i]['refund_data'].toString() != '' &&
@@ -2592,12 +2619,18 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                     ),
                                   ),
                                 ),
+                              if ((paymentstatus == '1') &&
+                                  (product[i]['status'].toString() == '1') &&
+                                  (product[i]['ship_status'].toString() ==
+                                      '0') &&
+                                  (userLoggedIn == true))
                               hSizedBox,
                               if (product[i]['ship_receipt'] != null)
                                 GestureDetector(
                                   onTap: () async {
-                                    String fileurl =
-                                        product[i]['ship_receipt'].toString();
+                                    DateTime now = DateTime.now();
+                                    print('DateTime-------${now}');
+                                    String fileurl = product[i]['ship_receipt'].toString();
                                     Map<Permission, PermissionStatus> statuses =
                                         await [
                                       Permission.storage,
@@ -2611,20 +2644,23 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                           .downloadsDirectory;
                                       if (dir != null) {
                                         final extension =
-                                            p.extension(fileurl); // '.dart'
+                                         p.extension(fileurl); // '.dart'
                                         print(
-                                            'extension-----${'winaoreceipt' + extension}');
+                                            'extension-----${'winaoreceipt'+extension}');
                                         var targetFileName =
-                                            'receipt_${'${product[i]['id'].toString()}' + extension}';
+                                            '/receipt_${'${product[i]['id'].toString()}'+extension+now.toString()}';
                                         String savename = targetFileName;
 
                                         String savePath =
-                                            dir.path + "/$savename";
+                                            dir.path + '/receipt_${'${product[i]['id'].toString()}-${DateTime.now().millisecondsSinceEpoch.toString()}'+extension}';
+                                        print('1111111');
                                         print(savePath);
                                         print("product[i]['ship_receipt'].toString()--------------------${product[i]['ship_receipt'].toString()}");
                                         // OpenFile.open(savePath);
                                         //output:  /storage/emulated/0/Download/banner.png
+                                    // /storage/emulated/0/Download/receipt_86.pdf
                                         try {
+                                          print("savePath----------8585-------------$savePath");
                                           await Dio()
                                               .download(fileurl, savePath,
                                                   onReceiveProgress:
@@ -2637,7 +2673,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
 
                                           await showSnackbar(context,
                                               'Receipt downloaded in Downloads folder');
-                                           OpenFile.open(savePath);
+                                           // OpenFile.open(savePath);
                                         } on DioError catch (e) {
                                           print(e.message);
                                         }
@@ -2668,16 +2704,16 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                     padding: EdgeInsets.symmetric(
                                         horizontal: 14, vertical: 10),
                                     decoration: BoxDecoration(
-                                      color: MyColors.whiteColor,
+                                      color: Color(0xfff2f2f2),
                                       border: Border.all(
-                                          color: MyColors.primaryColor,
+                                          color: Color(0xffeeeeee),
                                           width: 1),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Text(
-                                      'ship receipt',
+                                      'Ship Receipt',
                                       style: TextStyle(
-                                          color: MyColors.primaryColor),
+                                          color:Color(0xff506066)),
                                     ),
                                   ),
                                 ),
@@ -2724,7 +2760,11 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                             ),
                             Text(
                               '\$' +
-                                  Getorderdetails['grand_total_new'].toString(),
+                                  '${
+                                    double.parse(
+                                            Getorderdetails['grand_total_new'])
+                                        .toStringAsFixed(2)
+                                  }',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 15,
@@ -2790,7 +2830,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                   fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '\$${Getorderdetails['totall'].toString()}',
+                              '\$${double.parse(Getorderdetails['totall'].toString()).toStringAsFixed(2)}',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 15,
@@ -2877,6 +2917,9 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                     ),
                   ),
                   vSizedBox,
+                  Divider(
+                    thickness: 2,
+                  ),
                   Text(
                     'Payment Details',
                     style: TextStyle(
@@ -2901,6 +2944,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                       fontFamily: 'regular',
                     ),
                   ),
+
                   Text(
                     'Transaction Id : ${Getorderdetails['payment_id']}',
                     style: TextStyle(
@@ -2911,7 +2955,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                   ),
 
                   // 3buttons------------
-
+                 vSizedBox,
                   if (((paymentmethod == 'Bank') &&
                           Getorderdetails['payment_status'] != '1') &&
                       ((Getorderdetails['receipt_status'] != '3')))
@@ -2921,7 +2965,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                           onTap: () {},
                           child: Container(
                             decoration: BoxDecoration(
-                                color: MyColors.primaryColor,
+                                color: Color(0xff00b7ff),
                                 borderRadius: BorderRadius.circular(5)),
                             height: 30,
 
@@ -3011,20 +3055,18 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                                           child: TabBar(
                                                             unselectedLabelColor:
                                                                 Color(
-                                                                    0xFFF178B6),
+                                                                    0xFFF00b7ff),
                                                             labelColor: MyColors
                                                                 .whiteColor,
                                                             indicatorColor:
-                                                                MyColors
-                                                                    .primaryColor,
+                                                            Color(0xff004173),
                                                             indicator:
                                                                 BoxDecoration(
                                                               borderRadius:
                                                                   BorderRadius
                                                                       .circular(
                                                                           10),
-                                                              color: MyColors
-                                                                  .primaryColor,
+                                                              color:Color(0xff004173),
                                                             ),
                                                             // unselectedLabelStyle:,
                                                             tabs: [
@@ -3043,7 +3085,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                                                             borderRadius:
                                                                                 BorderRadius.circular(10),
                                                                             border: Border.all(
-                                                                              color: MyColors.primaryColor,
+                                                                              color: Color(0xff004173),
                                                                             )),
                                                                     child:
                                                                         Column(
@@ -3094,7 +3136,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                         Container(
                           // margin: EdgeInsets.all(25),
                           decoration: BoxDecoration(
-                              color: MyColors.primaryColor,
+                              color:Color(0xff00b7ff),
                               borderRadius: BorderRadius.circular(5)),
                           height: 30,
 
@@ -3171,7 +3213,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                         // if(userLoggedIn==true&&(Getorderdetails['receipt_status'].toString()=='3'))
                         Container(
                           decoration: BoxDecoration(
-                              color: MyColors.primaryColor,
+                              color: Color(0xff00b7ff),
                               borderRadius: BorderRadius.circular(5)),
                           height: 30,
                           // margin: EdgeInsets.all(25),
@@ -3254,6 +3296,10 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                                 children: [
                                                   GestureDetector(
                                                     onTap: () async {
+
+
+
+                                                      print('hello world ...........1');
                                                       FilePickerResult? result =
                                                           await FilePicker
                                                               .platform
@@ -3266,6 +3312,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                                           'png',
                                                         ],
                                                       );
+                                                      print('hello world ...........2');
 
                                                       if (result != null) {
                                                         File file = File(result
@@ -3302,7 +3349,8 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                                         // images.add(file);
                                                         // print(images);
                                                         setState(() {});
-                                                      } else {
+                                                      }
+                                                      else {
                                                         // User canceled the picker
                                                       }
 
@@ -3498,6 +3546,12 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                         ),
                       ],
                     ),
+                  vSizedBox,
+                  Divider(
+                    thickness: 2,
+                  ),
+                  vSizedBox,
+
                   Container(
                     // padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
                     child: Row(
@@ -3509,6 +3563,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                       ],
                     ),
                   ),
+                  vSizedBox,
                   Container(
                     // padding: EdgeInsets.all(15),
                     child: ElevatedButton(
@@ -3524,8 +3579,8 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        shape: StadiumBorder(),
-                        primary: MyColors.primaryColor,
+                        // shape: StadiumBorder(),
+                        primary: Color(0xFF004173),
                       ),
                       // color: MyColors.primaryColor,
                       // textColor:MyColors.whiteColor,
@@ -3533,6 +3588,20 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                       // splashColor: Colors.grey,
                     ),
                   ),
+
+                  // Align(
+                  //   alignment: Alignment.bottomCenter,
+                  //   child: FloatingActionButton.extended(
+                  //     backgroundColor: MyColors.primaryColor,
+                  //     foregroundColor: Colors.white,
+                  //     onPressed: () {
+                  //       // Respond to button press
+                  //     },
+                  //     icon: Icon(Icons.arrow_back_ios),
+                  //     label: Text('GO to Home'),
+                  //   ),
+                  // )
+
                 ],
               ),
             ),

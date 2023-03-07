@@ -193,7 +193,8 @@ class MyApp extends StatelessWidget {
       state: LocalizationProvider.of(context).state,
       child: MaterialApp(
         navigatorKey:MyGlobalKeys.navigatorKey,
-        title: 'winao_client_app',
+        debugShowCheckedModeBanner: false,
+        title: 'winao',
         theme: ThemeData(
           fontFamily: 'regular',
           // This is the theme of your application.
@@ -206,6 +207,7 @@ class MyApp extends StatelessWidget {
           // Notice that the counter didn't reset back to zero; the application
           // is not restarted.
           primarySwatch: Colors.blue,
+
         ),
         // initialRoute: SplashScreen.id,
         home: ScaffoldMessenger(child: SplashScreen()),

@@ -249,17 +249,23 @@ class _EditProfileState extends State<EditProfile> {
                     controller: firstnameController,
                     hintText: 'first name',
                     prefixIcon: 'assets/images/user.png',
+                    borderColor: Color(0xffd9d9d9),
+                    borderradius: 15,
                   ),
                   CustomTextField(
                     controller: lastnameController,
                     hintText: 'last name',
                     prefixIcon: 'assets/images/user.png',
+                    borderColor: Color(0xffd9d9d9),
+                    borderradius: 15,
                   ),
                   CustomTextField(
                     controller: emailController,
                     enabled: false,
                     hintText: 'johndoe@gmail.com',
                     prefixIcon: 'assets/images/email.png',
+                    borderColor: Color(0xffd9d9d9),
+                    borderradius: 15,
                   ),
                   vSizedBox,
                 ],
@@ -270,9 +276,11 @@ class _EditProfileState extends State<EditProfile> {
               alignment: Alignment.bottomCenter,
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
-                child: RoundEdgedButtonred(
+                child: RoundEdgedButton(
                   text: 'Update',
-                  color: MyColors.primaryColor,
+                  color:Color(0xff004173),
+                  textColor: Colors.white,
+                  boderRadius: 15,
                   onTap: () async {
                     // Navigator.pushNamed(context, SignInPage.id);
 

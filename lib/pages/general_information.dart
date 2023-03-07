@@ -51,24 +51,26 @@ class _GeneralInformationState extends State<GeneralInformation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(context: context),
-      body:load?CustomLoader(): Container(
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        child: Html(
-            data:aboutuscontent
-          // data:'<p>aboutuscontent<\/p>'
-        ),
+      body:load?CustomLoader(): SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Html(
+              data:aboutuscontent
+            // data:'<p>aboutuscontent<\/p>'
+          ),
 
-        // child: ListView(
-        //   children: [
-        //     MainHeadingText(text: 'ABOUT US', textAlign: TextAlign.center, fontFamily: 'semibold', fontSize: 24,),
-        //     vSizedBox4,
-        //     ParagraphText(text: ,
-        //       fontSize: 14,
-        //       fontFamily: 'regular',),
-        //     vSizedBox4,
-        //
-        //   ],
-        // ),
+          // child: ListView(
+          //   children: [
+          //     MainHeadingText(text: 'ABOUT US', textAlign: TextAlign.center, fontFamily: 'semibold', fontSize: 24,),
+          //     vSizedBox4,
+          //     ParagraphText(text: ,
+          //       fontSize: 14,
+          //       fontFamily: 'regular',),
+          //     vSizedBox4,
+          //
+          //   ],
+          // ),
+        ),
       ),
     );
   }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 class MyColors{
   // static const Color primaryColor = Color(0xFFE65C5C);
-  static const Color primaryColor = Color(0xFF004AAD);
+  static const Color primaryColor = Color(0xFF004173);
+  // static const Color primaryColor = Color(0xFF004AAD);
   static const Color greyColor = Color(0xFFEEEEEE);
   static Color loginBorderColor = Color(0xFF1877F2).withOpacity(0.3);
   static const Color blueColor = Color(0xFF1877F2);

@@ -31,7 +31,9 @@ class _SupportPageState extends State<SupportPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: MyColors.whiteColor,
-        appBar: AppBar(),
+        appBar: AppBar(
+          backgroundColor: Color(0xff004173),
+        ),
         body:  Stack(
           children: [
             SingleChildScrollView(
@@ -73,27 +75,36 @@ class _SupportPageState extends State<SupportPage> {
                     // ),
                     // vSizedBox4,
                     CustomTextField(controller: fullName, hintText: 'Your Full name',
+                      borderColor: Color(0xff00b7ff),
+                      borderradius: 15,
 
                       // prefixIcon: 'assets/images/user.png',
                     ),
                     CustomTextField(controller: emailController, hintText: 'Email',
-
+                      borderColor: Color(0xff00b7ff),
+                      borderradius: 15,
                       // prefixIcon: 'assets/images/email.png',
                     ),
                     // vSizedBox,
                     CustomTextField(controller: phone, hintText: 'Phone Number',
+                      borderColor: Color(0xff00b7ff),
+                      borderradius: 15,
                    // keyboardType: TextInputType.number,
                    //    prefixIcon: 'assets/images/call.png',
                     ),
                     CustomTextField(controller: message, hintText: 'Message',
+                      borderColor: Color(0xff00b7ff),
+                      borderradius: 15,
                       // obscureText: true,
                       // prefixIcon: 'assets/icons/gmail.png',
                       ),
                     vSizedBox2,
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 0),
-                      child: RoundEdgedButtonred(text: 'Send Message',
-                        color: MyColors.primaryColor,
+                      child: RoundEdgedButton(text: 'Send Message',
+                        boderRadius: 15,
+                        textColor: Colors.white,
+                        color: Color(0xff004173),
                         onTap: () async {
                           String phonePattern = r'^(\+?\d{1,4}[\s-])?(?!0+\s+,?$)\d{10}\s*,?$';
                           RegExp pnumber=new RegExp(phonePattern);

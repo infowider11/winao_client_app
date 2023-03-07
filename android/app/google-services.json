@@ -43,6 +43,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "830210120680-5sj2p210q2m6b1diincq9kjju88mgd75.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.winao_commission_app",
+            "certificate_hash": "8d24e25e782e36d171b09f6103ea3495de599086"
+          }
+        },
+        {
           "client_id": "830210120680-is1e931662gk1kfb91u9e4t75s8q1epu.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -63,8 +63,13 @@ class CheckoutState extends State<Checkout> {
   initiialzie(){
     log('data coming from api--55---'+widget.product.toString());
     widget.product?.forEach((element) {
-      addItem(item: element);
-      element['qty'] = int.parse((element['qty']??'0').toString()) + 1;
+
+      print('stok-----${element['stock_qty']}');
+      if(element['stock_qty'].toString()!='0'){
+        element['qty'] = int.parse((element['qty']??'0').toString()) + 1;
+        addItem(item: element);
+
+      }
     });
     setState((){});
   }
@@ -155,8 +160,20 @@ class CheckoutState extends State<Checkout> {
   }
 
   String privacycontent = '';
+
+
+
+
+  markAsSeen()async{
+    print('${widget.order_id}--seen--------order_id');
+
+    var id = await getCurrentUserId();
+    var res = await Webservices.getList('${ApiUrls.markasseen}?is_seen=1&recommended_id=${widget.order_id}');
+    print('${res}');
+  }
   void initState() {
     // TODO: implement initState
+    markAsSeen();
     super.initState();
 
     initiialzie();
@@ -278,7 +295,7 @@ class CheckoutState extends State<Checkout> {
                 Text(
                   'Recommended Products are :',
                   textAlign: TextAlign.right,
-                  style: TextStyle(fontSize: 14, fontFamily: 'regular'),
+                  style: TextStyle(fontSize: 14, fontFamily: 'regular',color: Color(0xff212121)),
                 ),
                 vSizedBox,
                 ListView.builder(
@@ -305,27 +322,35 @@ class CheckoutState extends State<Checkout> {
                             data: widget.product![index],
 
                             addItem: (){
-                              print('the cart is kdk ${cart}');
-                              addItem(
-                                item: widget.product![index],
-                              );
-                              widget.product![index]['qty'] = int.parse((widget.product![index]['qty']??'0').toString()) + 1;
-                              setState((){});
+
+                              if(widget.product![index]['stock_qty'].toString()!='0'){
+                                print('the cart is kdk ${widget.product![index]['stock_qty']}');
+                                addItem(
+                                  item: widget.product![index],
+                                );
+                                widget.product![index]['qty'] = int.parse((widget.product![index]['qty']??'0').toString()) + 1;
+                                setState((){});
+                              }
+
                             },
 
                             removeItem: (){
                               print('quantity..............${widget.product![index]['qty']}');
                               // for(var i=0;i<=cart.length;i++){
                               //   if( total>0 && Grandtotal>0 ){
-                                  removeItem(
-                                    item: widget.product![index],
-                                  );
-                                // }
-                              // }
                               // if(widget.product![index]['qty']>1){
+                                removeItem(
+                                  item: widget.product![index],
+                                );
+                                // }
+                                // }
+                                // if(widget.product![index]['qty']>1){
                                 widget.product![index]['qty'] = int.parse((widget.product![index]['qty']??'0').toString()) - 1;
+                                // }
+                                setState((){});
                               // }
-                              setState((){});
+
+
                             },
 
                             agent_name:
@@ -424,24 +449,43 @@ class CheckoutState extends State<Checkout> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              child: RoundEdgedButtonred(
+              child: RoundEdgedButton(
                 text: 'Checkout Now',
-                color: MyColors.primaryColor,
+                color:total>0? Color(0xff004173): Color(0xff5a89b4),
+                boderRadius: 10,
+                textColor: Colors.white,
+
                 onTap: () {
+                  List newCart=[];
                   // log('sdggdg--------${widget.product![i]['is_newsletter']}');
                   // _incrementCounter();
                   // Navigator.pushNamed(context, BillingPage.id);
-                  log('customer:------------555${cart.toString()}');
-                  // return;//mizannn
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) =>
-                          BillingPage(
+                  log('customer:------------555${cart[0]}');
+                  for(int i=0;i<cart.length;i++){
+                    if(cart[i]['qty']!=0){
+                      print("qty 0 === $i");
+                      newCart.add(cart[i]);
 
-                            carts:cart,ccustomer:widget.customer,aagent: widget.agent,recoid:widget.recomenid,
-                              // is_newsletter:widget.product['is_newsletter'].toString()
-                          )
-                      )
-                  );
+                    }
+                  }
+                  // setState(() {
+                  //
+                  // });
+                  log('customer:------ankita------555${newCart.length}');
+
+                  // return;//mizannn
+                   if(total>0){
+
+                     Navigator.pushReplacement(context,
+                         MaterialPageRoute(builder: (context) =>
+                             BillingPage(
+
+                               carts:newCart,ccustomer:widget.customer,aagent: widget.agent,recoid:widget.recomenid,
+                               // is_newsletter:widget.product['is_newsletter'].toString()
+                             )
+                         )
+                     );
+                   }
                 },
               ),
               padding: EdgeInsets.symmetric(horizontal: 16),

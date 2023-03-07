@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as Badge;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:winao_client_app/constants/colors.dart';
@@ -54,9 +54,11 @@ class _SettingsPageState extends State<SettingsPage> {
         title: Text('WINAO', style: TextStyle(fontSize: 16, fontFamily: 'bold', letterSpacing: 1),),
         actions: [
 
-          Badge(
+          Badge.Badge(
+            badgeColor: Color(0xff00b7ff),
+
             showBadge:notificationnumber.toString()=='null'||notificationnumber.toString()=='0'?false:true ,
-            position: BadgePosition.topEnd(top: 10, end: 6),
+            position: Badge.BadgePosition.topEnd(top: 10, end: 6),
             // badgeColor: Colors.white,
             badgeContent:Text('${notificationnumber.toString()}',style: TextStyle(color: Colors.white,fontSize: 10)),
             child: IconButton(
@@ -178,7 +180,9 @@ class _SettingsPageState extends State<SettingsPage> {
                           ],
                         ),
                         SizedBox(height: 20),
-                        CustomTextField(controller: codeController, hintText: 'Enter Referral Code'),
+                        CustomTextField(controller: codeController, hintText: 'Enter Referral Code',
+                          borderColor: Color(0xff00b7ff),
+                          borderradius: 15,),
                         vSizedBox2,
                         ElevatedButton(
                           onPressed: () async{
@@ -494,7 +498,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                           child: Text('Enter'),
                           style: ElevatedButton.styleFrom(shape: StadiumBorder(),
-                            primary:MyColors.primaryColor,
+                            primary:Color(0xff004173),
 
 
                           ),

@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:convert' as convert;
+import 'dart:io';
 
 
 
-
+import 'package:permission_handler/permission_handler.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:winao_client_app/constants/colors.dart';
 import 'package:winao_client_app/constants/global_keys.dart';
 import 'package:winao_client_app/constants/image_urls.dart';
 import 'package:winao_client_app/constants/navigation.dart';
@@ -16,6 +19,7 @@ import 'package:winao_client_app/pages/signin.dart';
 import 'package:winao_client_app/pages/wallet.dart';
 import 'package:winao_client_app/pages/welcome_screen.dart';
 import 'package:winao_client_app/services/api_urls.dart';
+import 'package:winao_client_app/widgets/round_edged_button.dart';
 
 import '../services/auth.dart';
 import '../services/webservices.dart';
@@ -98,16 +102,51 @@ class _SplashScreenState extends State<SplashScreen> {
     });
   }
 
+  takePer() async {
+    // final androidInfo = await DeviceInfoPlugin().androidInfo;
+    late final Map<Permission, PermissionStatus> statuses;
+    // Map<Permission, PermissionStatus> statuses = await [
+    //   // Permission.location,
+    //   Permission.storage,
+    // ].request();
+    // print("annnnn----------------${statuses[Permission.storage]}");
+    // print(statuses[Permission.storage]);
+    statuses = await [Permission.photos , Permission.notification].request();
+    print("annnnn------11----------${statuses[Permission.photos]}");
+    var isDenied=statuses[Permission.photos];
+
+    if (isDenied == PermissionStatus.permanentlyDenied) {
+      print("Permission-----------");
+      // The user opted to never again see the permission request dialog for this
+      // app. The only way to change the permission's status now is to let the
+      // user manually enable it in the system settings.
+      openAppSettings();
+      print("annnnn------22----------${statuses[Permission.photos]}");
+
+    }
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
-    Future.delayed(Duration(seconds:5)).then((value) async {
-
+    Future.delayed(Duration(seconds:2)).then((value) async {
+    //
       Foo.initDynamicLinks();
+     // await Permission.camera.request();
+     await Permission.storage.request();
+     // await Permission.manageExternalStorage.request();
+     // takePer();
+
+        print("gfjygdj ..............${await Permission.storage.isGranted}");
+      await Permission.storage.request();
+      print("gfjygdj ..............${await Permission.storage.isGranted}");
+        // Either the permission was already granted before or the user just granted it.
+      // return ;
       var userLoggedIn = await isUserLoggedIn();
+
       if(userLoggedIn==true){
+
         print("login");
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MyStatefulWidget(key: MyGlobalKeys.tabBarKey,)));
       }
@@ -132,22 +171,37 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+backgroundColor: Color(0xFF004173),
+      body: SingleChildScrollView(
 
-      body: Column(
-        children: [
-          Container(
-            height: 800,
-            child: Center(
-              child: Image.asset(
-                MyImages.splashScreen,
-                width: MediaQuery.of(context).size.width-60,
-                fit: BoxFit.fitWidth,
+        child: Column(
+          children: [
+            // RoundEdgedButton(text: 'gfksjklgf', onTap: ()async{
+            //   await Permission.mediaLibrary;
+            //   await Permission.mediaLibrary.request();
+            //
+            //
+            //   await Permission.storage.request();
+            //   print("gfjygdj ..............${await Permission.mediaLibrary.isGranted}");
+            // },),
+            Container(
+              // width: 250,
+              height: 760,
+              child: Center(
+
+                child: Image.asset(
+                  'assets/images/logo-2.png',
+                  width: 250,
+                  fit: BoxFit.fitWidth,
+                ),
+
               ),
-
             ),
-          ),
-          Text('Tus compras más fáciles y seguras',style: TextStyle(fontSize: 20),)
-        ],
+            // Container(
+            //   margin: EdgeInsets.all(10),
+            //     child: Text('Tus compras más fáciles y seguras',style: TextStyle(fontSize: 20,fontStyle: FontStyle.italic,color: MyColors.primaryColor),))
+          ],
+        ),
       ),
     );
   }

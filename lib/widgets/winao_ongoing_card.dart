@@ -18,7 +18,7 @@ class _WinaoOngoingCardState extends State<WinaoOngoingCard> {
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       margin: EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
-        border: Border.all(),
+        border: Border.all(color: Color(0xff00a1e1)),
         borderRadius: BorderRadius.circular(20),
 
       ),

@@ -202,149 +202,332 @@ class _HorizontalcardState extends State<Horizontalcard> {
   }
   Widget build(BuildContext context) {
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-        side: BorderSide(color: Color(0xFF7A7A7A), width: 1),
-      ),
-      elevation: 0,
+    return GestureDetector(
+      onTap: ()async {
+        print('order detal${widget.orderdetailsdata}');
+        // return;
+        // Navigator.pushNamed(context, Checkout.id);},
+        if(widget.orderdetailsdata['order_id'].toString() != '0'){
+          Navigator.push(
+            MyGlobalKeys.tabBarKey.currentContext!,
+            MaterialPageRoute(builder: (context) =>  ManageOrdersPage(orderid: widget.orderdetailsdata['order_id'].toString(), orderData: {},)),
+          );
+        } else {
+          if( widget.orderdetailsdata['agent_info']!=false)
+            await Navigator.push(context, MaterialPageRoute(
+                builder: (context) =>
+                    Checkout(product: widget
+                        .orderdetailsdata['products'],
+                        agent: widget
+                            .orderdetailsdata['agent_info'],
+                        customer: widget
+                            .orderdetailsdata['customer_info'],
+                        order_id: widget
+                            .orderdetailsdata['id'],
+                        date: 'date',
+                        reffid: widget.orderdetailsdata['ref_id'],
+                        recomenid: widget.orderdetailsdata['id'])));
+        }
 
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        print('refrshruned');
+        widget.refresh();
+        print('refrshruned2');
 
-        children: [
-          // Expanded(
-          //   flex: 2,
-          //   child: Column(
-          //
-          //     children: [
-          //
-          //       Container(
-          //         // height: 98,
-          //         color: Color(0xFFF7F7F7),
-          //         padding: EdgeInsets.all(10),
-          //         child: Image.network(widget.productsdata![i]['images'][0]['image'],
-          //           width: 150,
-          //           height: 140,
-          //           fit: BoxFit.contain,
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
+        setState((){});
+      },
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          // side: BorderSide(color: Color(0xFF7A7A7A), width: 1),
+        ),
+        elevation: 2,
 
-          Expanded(
-            // flex: 5,
-            child: Container(
-              padding: EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('${widget.orderdetailsdata['products'].length.toString()} Products on this Order', style: TextStyle(
-                      color: Colors.black, fontFamily: 'semibold', fontSize: 13
-                    ),
-                  ),
-                  SizedBox(height: 3,),
-                  Text(
-                    'Recommended Id: ${widget.orderdetailsdata['id']}',
-                    style: TextStyle(color: Colors.black, fontFamily: 'semibold', fontSize: 15),
-                  ),
-                  vSizedBox,
-                  Text(
-                    'Referrel Id : ${widget.orderdetailsdata['ref_id']}',
-                    style: TextStyle(color: Colors.black.withOpacity(0.6), fontSize: 12, height: 1.3),maxLines: 3,
-                  ),
-                  vSizedBox,
-                  Text(
-                    'Date : ${DateFormat.yMMMd().format(DateTime.parse(widget.orderdetailsdata['created_at'].toString()))}',
-                    style: TextStyle(color: Colors.black.withOpacity(0.6), fontSize: 12, height: 1.3),maxLines: 3,
-                  ),
-                  vSizedBox,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Row(
-                          //   children: [
-                          //     Image.asset(MyImages.time_card, height: 15,),
-                          //     SizedBox(width: 8,),
-                          //     Text('Offer Valid till: 12/12/12', style: TextStyle(fontSize: 10),)
-                          //   ],
-                          // ),
-                          SizedBox(height: 5,),
-                          Row(
-                            children: [
-                              Image.asset(MyImages.user_card_image, height: 15,),
-                              SizedBox(width: 8,),
-                              Text('Reffered By :${widget.orderdetailsdata['agent_info']['f_name']+"  "+widget.orderdetailsdata['agent_info']['l_name']} ', style: TextStyle(fontSize: 10),)
-                              // ${widget.firstname} ${widget.lastname}
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
 
-                            ],
-                          ),
-                        ],
-                      ),
-                      GestureDetector(
-                        onTap: (){},
-                        child: Container(
-                          width: 80,
-                          height:35,
-                          decoration: BoxDecoration(
-                            color: MyColors.homepagebuttoncolor,
-                            borderRadius: BorderRadius.circular(100)
-                          ),
-                          child: GestureDetector(
-                            onTap: ()async {
-                              print('order detal${widget.orderdetailsdata}');
-                              // return;
-                              // Navigator.pushNamed(context, Checkout.id);},
-                              if(widget.orderdetailsdata['order_id'].toString() != '0'){
-                                Navigator.push(
-                                  MyGlobalKeys.tabBarKey.currentContext!,
-                                  MaterialPageRoute(builder: (context) =>  ManageOrdersPage(orderid: widget.orderdetailsdata['order_id'].toString(), orderData: {},)),
-                                );
-                              } else {
-                                await Navigator.push(context, MaterialPageRoute(
-                                    builder: (context) =>
-                                        Checkout(product: widget
-                                            .orderdetailsdata['products'],
-                                            agent: widget
-                                                .orderdetailsdata['agent_info'],
-                                            customer: widget
-                                                .orderdetailsdata['customer_info'],
-                                            order_id: widget
-                                                .orderdetailsdata['id'],
-                                            date: 'date',
-                                            reffid: widget.orderdetailsdata['ref_id'],
-                                            recomenid: widget.orderdetailsdata['id'])));
-                              }
+          children: [
+            // Expanded(
+            //   flex: 2,
+            //   child: Column(
+            //
+            //     children: [
+            //
+            //       Container(
+            //         // height: 98,
+            //         color: Color(0xFFF7F7F7),
+            //         padding: EdgeInsets.all(10),
+            //         child: Image.network(widget.productsdata![i]['images'][0]['image'],
+            //           width: 150,
+            //           height: 140,
+            //           fit: BoxFit.contain,
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
 
-                              print('refrshruned');
-                              widget.refresh();
-                              print('refrshruned2');
-
-                              setState((){});
-                            },
-                              child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+            Expanded(
+              // flex: 5,
+              child: Container(
+                padding: EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 10),
+                child: Column(
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Row(
+                            //   children: [
+                            //     Image.asset(MyImages.time_card, height: 15,),
+                            //     SizedBox(width: 8,),
+                            //     Text('Offer Valid till: 12/12/12', style: TextStyle(fontSize: 10),)
+                            //   ],
+                            // ),
+                            SizedBox(height: 5,),
+                            Row(
                               children: [
-                                Text('View Products', style: TextStyle(fontFamily: 'regular', color: Colors.white, fontSize: 10),)
-                              ],
+                                Text('${widget.orderdetailsdata['products'].length.toString()} Products on this Order', style: TextStyle(
+                                    color: Color(0xff004173), fontFamily: 'bold', fontSize: 13
+                                ),
+                                ),
+                                  ],
+                            ),
+                          ],
+                        ),
+                        GestureDetector(
+                          onTap: (){},
+                          child: Container(
+                            width: 80,
+                            height:35,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(100)
+                            ),
+                            child: GestureDetector(
+                              onTap: ()async {
+                                print('order detal${widget.orderdetailsdata}');
+                                // return;
+                                // Navigator.pushNamed(context, Checkout.id);},
+                                if(widget.orderdetailsdata['order_id'].toString() != '0'){
+                                  Navigator.push(
+                                    MyGlobalKeys.tabBarKey.currentContext!,
+                                    MaterialPageRoute(builder: (context) =>  ManageOrdersPage(orderid: widget.orderdetailsdata['order_id'].toString(), orderData: {},)),
+                                  );
+                                } else {
+                                  await Navigator.push(context, MaterialPageRoute(
+                                      builder: (context) =>
+                                          Checkout(product: widget
+                                              .orderdetailsdata['products'],
+                                              agent: widget
+                                                  .orderdetailsdata['agent_info'],
+                                              customer: widget
+                                                  .orderdetailsdata['customer_info'],
+                                              order_id: widget
+                                                  .orderdetailsdata['id'],
+                                              date: 'date',
+                                              reffid: widget.orderdetailsdata['ref_id'],
+                                              recomenid: widget.orderdetailsdata['id'])));
+                                }
+
+                                print('refrshruned');
+                                widget.refresh();
+                                print('refrshruned2');
+
+                                setState((){});
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if(widget.orderdetailsdata['is_seen'].toString()!='1')
+                                  Container(
+                                    padding:EdgeInsets.symmetric(horizontal: 14,vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color:widget.orderdetailsdata['is_seen'].toString()!='1'?Color(0xff00b7ff):Color(0xff004173),
+                                     borderRadius: BorderRadius.circular(5)
+
+                                      ),
+                                      child: Text(widget.orderdetailsdata['is_seen'].toString()!='1'?'NUVEO':'ABIERTO', style: TextStyle(fontFamily: 'regular', color:Colors.white, fontSize: 10),))
+
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      )
-                    ],
-                  ),
+                        )
+                      ],
+                    ),
+                    // Text('${widget.orderdetailsdata['products'].length.toString()} Products on this Order', style: TextStyle(
+                    //     color: Color(0xff004173), fontFamily: 'bold', fontSize: 13
+                    //   ),
+                    // ),
+                    SizedBox(height: 3,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
-                ],
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Recommended Id: ${widget.orderdetailsdata['id']}',
+                            style: TextStyle(color: Colors.black, fontFamily: 'semibold', fontSize: 15),
+                          ),
+                          vSizedBox,
+                          if(widget.orderdetailsdata['ref_id']!=false)
+                          Text(
+                            'Referrel Id : ${widget.orderdetailsdata['ref_id']}',
+                            style: TextStyle(color: Color(0xff6b6b6b), fontSize: 12, height: 1.3),maxLines: 3,
+                          ),
+                          vSizedBox,
+                          Text(
+                            'Date : ${DateFormat.yMMMd().format(DateTime.parse(widget.orderdetailsdata['created_at'].toString()))}',
+                            style: TextStyle(color: Color(0xff6b6b6b), fontSize: 12, height: 1.3),maxLines: 3,
+                          ),
+                          vSizedBox,
+                        ],
+                        ),
+
+                        // Padding(
+                        //   padding: const EdgeInsets.all(8.0),
+                        //   child:
+                        //   Image.network(widget.orderdetailsdata['products'][0]['images'].length>0?'${widget.orderdetailsdata['products'][0]['images'][0]['image']}':'${widget.orderdetailsdata['products'][0]['image']}',height: 80,width: 80,fit: BoxFit.cover,),
+                        // ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child:Row(
+                            children: [
+                              Column(
+                                children: [
+                                  for(int p=1;p<widget.orderdetailsdata['products'].length; p++)
+                                    // Text("${widget.orderdetailsdata['products'].length}"),
+                                  if(p<4)
+                                  Column(
+                                    children: [
+                                      Image.network(widget.orderdetailsdata['products'][p]['images'].length>p?'${widget.orderdetailsdata['products'][p]['images'][0]['image']}':'${widget.orderdetailsdata['products'][p]['image']}',height: 35,width: 40,fit: BoxFit.cover,),
+                                      vSizedBox,
+                                    ],
+                                  ),
+
+                                  // if(widget.orderdetailsdata['products'][0]['images'].length>2)
+                                  // Image.network(widget.orderdetailsdata['products'][0]['images'].length>2?'${widget.orderdetailsdata['products'][0]['images'][2]['image']}':'${widget.orderdetailsdata['products'][0]['image']}',height: 20,width: 20,fit: BoxFit.cover,),
+                                  // vSizedBox,
+                                  // if(widget.orderdetailsdata['products'][0]['images'].length>3)
+                                  // Image.network(widget.orderdetailsdata['products'][0]['images'].length>3?'${widget.orderdetailsdata['products'][0]['images'][3]['image']}':'${widget.orderdetailsdata['products'][0]['image']}',height: 20,width: 20,fit: BoxFit.cover,),
+                                  // vSizedBox,
+                                  // if(widget.orderdetailsdata['products'][0]['images'].length>4)
+                                  // Image.network(widget.orderdetailsdata['products'][0]['images'].length>4?'${widget.orderdetailsdata['products'][0]['images'][4]['image']}':'${widget.orderdetailsdata['products'][0]['image']}',height: 20,width: 20,fit: BoxFit.cover,),
+
+                                ],
+                              ),
+                              hSizedBox2,
+                              Image.network(widget.orderdetailsdata['products'][0]['images'].length>0?'${widget.orderdetailsdata['products'][0]['images'][0]['image']}':'${widget.orderdetailsdata['products'][0]['image']}',height: 80,width: 80,fit: BoxFit.cover,),
+
+                            ],
+                          )
+                        )
+                      ],
+                    ),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Row(
+                            //   children: [
+                            //     Image.asset(MyImages.time_card, height: 15,),
+                            //     SizedBox(width: 8,),
+                            //     Text('Offer Valid till: 12/12/12', style: TextStyle(fontSize: 10),)
+                            //   ],
+                            // ),
+                            SizedBox(height: 5,),
+                            if(widget.orderdetailsdata['agent_info']!=false)
+                            Row(
+                              children: [
+                                Image.asset('assets/images/rr.png', height: 15,),
+                                SizedBox(width: 8,),
+                                if(widget.orderdetailsdata['agent_info']!=false)
+                                Text('Reffered By :${widget.orderdetailsdata['agent_info']['f_name']+"  "+widget.orderdetailsdata['agent_info']['l_name']} ', style: TextStyle(fontSize: 10,color: Color(0xff6b6b6b)),)
+                                // ${widget.firstname} ${widget.lastname}
+
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        // GestureDetector(
+                        //   onTap: (){},
+                        //   child: Container(
+                        //     width: 80,
+                        //     height:35,
+                        //     decoration: BoxDecoration(
+                        //       color: Colors.white,
+                        //       borderRadius: BorderRadius.circular(100)
+                        //     ),
+                        //     child: GestureDetector(
+                        //       onTap: ()async {
+                        //         print('order detal${widget.orderdetailsdata}');
+                        //         // return;
+                        //         // Navigator.pushNamed(context, Checkout.id);},
+                        //         if(widget.orderdetailsdata['order_id'].toString() != '0'){
+                        //           Navigator.push(
+                        //             MyGlobalKeys.tabBarKey.currentContext!,
+                        //             MaterialPageRoute(builder: (context) =>  ManageOrdersPage(orderid: widget.orderdetailsdata['order_id'].toString(), orderData: {},)),
+                        //           );
+                        //         } else {
+                        //           if( widget.orderdetailsdata['agent_info']!=false)
+                        //           await Navigator.push(context, MaterialPageRoute(
+                        //               builder: (context) =>
+                        //                   Checkout(product: widget
+                        //                       .orderdetailsdata['products'],
+                        //                       agent: widget
+                        //                           .orderdetailsdata['agent_info'],
+                        //                       customer: widget
+                        //                           .orderdetailsdata['customer_info'],
+                        //                       order_id: widget
+                        //                           .orderdetailsdata['id'],
+                        //                       date: 'date',
+                        //                       reffid: widget.orderdetailsdata['ref_id'],
+                        //                       recomenid: widget.orderdetailsdata['id'])));
+                        //         }
+                        //
+                        //         print('refrshruned');
+                        //         widget.refresh();
+                        //         print('refrshruned2');
+                        //
+                        //         setState((){});
+                        //       },
+                        //         child: Row(
+                        //         mainAxisAlignment: MainAxisAlignment.center,
+                        //         children: [
+                        //           Text('View Products', style: TextStyle(fontFamily: 'regular', color:Color(0xFF13b8e8), fontSize: 10),)
+                        //         ],
+                        //       ),
+                        //     ),
+                        //   ),
+                        // )
+                      ],
+                    ),
+
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+            // Container(
+            //   // height: 50,
+            //   // width:50,
+            //   child:Text('data'),
+            //   ),
+
+          ],
+        ),
       ),
     );
   }
@@ -432,7 +615,7 @@ class _HorizontalcardProductState extends State<HorizontalcardProduct> {
                     padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
-                      color: MyColors.primaryColor
+                      color:Color(0xff00b7ff)
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -503,7 +686,7 @@ class _HorizontalcardProductState extends State<HorizontalcardProduct> {
                           SizedBox(height: 5,),
                           Row(
                             children: [
-                              Image.asset(MyImages.user_card_image, height: 15,),
+                              Image.asset('assets/images/rr.png', height: 15,),
                               SizedBox(width: 8,),
                               Text('Reffered By : ${widget.agent_name}', style: TextStyle(fontSize: 10),)
                             ],
@@ -538,7 +721,7 @@ class _HorizontalcardProductState extends State<HorizontalcardProduct> {
                             height: 35,
                             width: 100,
                             decoration: BoxDecoration(
-                                color: MyColors.primaryColor,
+                                color: Color(0xff004173),
                                 borderRadius: BorderRadius.circular(10)
                             ),
                             child:Padding(

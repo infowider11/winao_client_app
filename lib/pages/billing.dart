@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_paypal/flutter_paypal.dart';
@@ -9,8 +10,11 @@ import 'package:geocoding/geocoding.dart';
 import 'package:webview_flutter_x5/webview_flutter.dart';
 import 'package:winao_client_app/constants/colors.dart';
 import 'package:winao_client_app/constants/global_keys.dart';
+import 'package:winao_client_app/constants/navigation.dart';
 import 'package:winao_client_app/constants/sized_box.dart';
 import 'package:winao_client_app/packages/packages/lib/widget/search_widget.dart';
+import 'package:winao_client_app/pages/bottomnavigation.dart';
+import 'package:winao_client_app/pages/privacyandpolicy.dart';
 import 'package:winao_client_app/pages/signin.dart';
 import 'package:winao_client_app/pages/support.dart';
 import 'package:winao_client_app/pages/terms.dart';
@@ -32,6 +36,8 @@ import '../widgets/loader.dart';
 import '../widgets/showSnackbar.dart';
 import 'checkout.dart';
 import 'manageorder.dart';
+bool isObscure=true;
+bool isObscurePas=true;
 
 class BillingPage extends StatefulWidget {
   static const String id = "billing";
@@ -39,7 +45,6 @@ class BillingPage extends StatefulWidget {
   final Map? aagent;
   final Map? ccustomer;
   final String? recoid;
-
 
   // final List carts1;
   const BillingPage({
@@ -85,8 +90,8 @@ class _BillingPageState extends State<BillingPage> {
 
   String selectedIndex = '';
   int? selectedIndexaddress;
-  String payerID ='';
-  String paymentId ='';
+  String payerID = '';
+  String paymentId = '';
 
   List<dynamic> Addresslist = [];
   String Address = '';
@@ -98,14 +103,15 @@ class _BillingPageState extends State<BillingPage> {
   String latt = '';
   bool rememberMe = true;
   bool load = false;
-  String? newCity =null;
-  List Cities=[];
+  String? newCity = null;
+  List Cities = [];
   // String city = '';
-getCity()async{
-  Cities = await Webservices.getList('${ApiUrls.get_cities}?all=1');
-  setState((){});
-  log('res getall get_cities=----------------${Cities}');
-}
+  getCity() async {
+    Cities = await Webservices.getList('${ApiUrls.get_cities}?all=1');
+    setState(() {});
+    log('res getall get_cities=----------------${Cities}');
+  }
+
   void creditcardform() {
     setState(() {
       _isVisible = !_isVisible;
@@ -150,8 +156,6 @@ getCity()async{
   TextEditingController phonenoController = TextEditingController();
   TextEditingController newAddress = TextEditingController();
 
-
-
   onSuccessPaypal(Map params) async {
     try {
       loadingShow(context);
@@ -162,8 +166,6 @@ getCity()async{
     } else {
       // useridd = user_id;
       useridd = widget.ccustomer!['id'];
-
-
     }
     Map<String, dynamic> data = {
       'trasnId': paymentId,
@@ -193,14 +195,11 @@ getCity()async{
 
       "cartItems": convert.jsonEncode(widget.carts)
     };
-    if(widget.ccustomer!['password_set'].toString()=='0'){
-      data['password']=passwordController.text;
+    if (widget.ccustomer!['password_set'].toString() == '0') {
+      data['password'] = passwordController.text;
     }
 
-
-
     log('Dataforcheckout...........${data}');
-
 
     // return;
     var res = await Webservices.postData(
@@ -286,7 +285,6 @@ getCity()async{
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
-
                     },
                     child: Text('Ok'),
                     style: ElevatedButton.styleFrom(
@@ -301,11 +299,9 @@ getCity()async{
         },
       );
     }
-    try{
+    try {
       loadingHide(context);
-    }catch(e){
-
-    }
+    } catch (e) {}
   }
 
   void initState() {
@@ -316,7 +312,7 @@ getCity()async{
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
     agent_id = widget.aagent!['id'];
     for (var i = 0; i < widget.carts.length; i++) {
-      if(widget.carts[i]['user_id'].toString()!='false'){
+      if (widget.carts[i]['user_id'].toString() != 'false') {
         log('cartdataorignal.......${widget.carts[i]['user_id'].toString()}');
         log('cartdataorignal.......${widget.carts[i]['store_id'].toString()}');
       }
@@ -364,18 +360,13 @@ getCity()async{
     //   log('cartdatandfnhjhnd.......${widget.carts[i]['store_id']}');
     // }
 
-
-
-
     getbankdetails();
     firstnameController.text = widget.ccustomer!['f_name'];
     lastnameController.text = widget.ccustomer!['l_name'];
     emailController.text = widget.ccustomer!['email'];
     addressController.text = widget.ccustomer!['address'];
     phonenoController.text = widget.ccustomer!['phone'];
-    getaddress();
-
-
+    getaddress(false);
   }
 
   getPhonecode() async {
@@ -398,89 +389,93 @@ getCity()async{
     print('adminbankdetails...................$adminbankdetails');
   }
 
-  getaddress() async {
+  getaddress(isSelected) async {
     var user_id = await widget.ccustomer!['id'];
     var res = await Webservices.getList(
         '${ApiUrls.customeraddresses}?user_id=$user_id');
 
     for (var i = 0; i < res.length; i++) {
-
-      Address = res[i]['address'].toString();
-      city = res[i]['city'].toString();
-      state = res[i]['state'].toString();
-      country = res[i]['country'].toString();
-      zip = res[i]['zip'].toString();
-      latt = res[i]['lat'].toString();
-      lng = res[i]['lng'].toString();
-      country = res[i]['country'].toString();
+      // Address = res[i]['address'].toString();
+      // city = res[i]['city'].toString();
+      // state = res[i]['state'].toString();
+      // country = res[i]['country'].toString();
+      // zip = res[i]['zip'].toString();
+      // latt = res[i]['lat'].toString();
+      // lng = res[i]['lng'].toString();
+      // country = res[i]['country'].toString();
 
       print('addressinloop.......${Address}');
     }
-    calculateshipping(0);
+    // calculateshipping(0);
     setState(() {});
-    Addresslist = res;
-    log('Addresslist----------${Addresslist[0]['lat']}');
-    log('Addresslist----------${Addresslist}');
     for (var i = 0; i < res.length; i++) {
-
-
-      res[i]['isSelected']=false;
-      if(i==res.length-1){
-        selected(res[0]['id'],true);
-      }
-
-
+      res[i]['isSelected'] = false;
     }
+    Addresslist = res;
+    // log('Addresslist----------${Addresslist[0]['lat']}');
+    log('Addresslist----------${Addresslist}');
 
-
-
+    if(isSelected){
+      selected(res[0]['id'],true);
+    }
+    // for (var i = 0; i < res.length; i++) {
+    //   res[i]['isSelected'] = false;
+    //   if(isSelected){
+    //     selected(res[0]['id'],true);
+    //   }
+    //   if (i == res.length - 1) {
+    //     // selected(res[0]['id'],true);
+    //   }
+    // }
   }
-   selected(id,bool value){
+
+  selected(id, bool value) {
 
     for (var i = 0; i < Addresslist.length; i++) {
-      Addresslist[i]['isSelected']=false;
-      if(id==Addresslist[i]['id']){
+      Addresslist[i]['isSelected'] = false;
+      if (id == Addresslist[i]['id']) {
+        print("ankita ---------------$i");
+        Addresslist[i]['isSelected'] = true;
 
-        Addresslist[i]['isSelected']=true;
-
-          calculateshipping(i);
-
-
+        calculateshipping(i);
       }
     }
     setState(() {});
-  }
+    // calculateshipping(0);
 
+  }
 
   calculateshipping(i) async {
     print('calculateshipping-----------555');
-       try{
-         log('lng-----555${Addresslist[i]['lng']}');
-        }
-        catch(e){
-         log('errorrrrrrrrrrr----${e}');
-       }
-
+    try {
+      log('lng-----555${Addresslist[i]['lng']}');
+    } catch (e) {
+      log('errorrrrrrrrrrr----${e}');
+    }
 
     setState(() {
       selectedIndexaddress = i;
     });
-    log('cart----'+widget.carts.toString());
-    for(int ii=0;ii<widget.carts.length;ii++){
+    log('cart----' + widget.carts.toString());
+    for (int ii = 0; ii < widget.carts.length; ii++) {
       var c = [];
-      for(int j=0;j<widget.carts[ii]['options']['store'].length;j++){
+      for (int j = 0; j < widget.carts[ii]['options']['store'].length; j++) {
         c.add(widget.carts[ii]['options']['store'][j]['id']);
       }
-      widget.carts[ii]['options']['store1']= c.join(',');
-      widget.carts[ii]['options']['seller1'] = widget.carts[ii]['user_id'].toString()=='false'?'0': widget.carts[ii]['user_id']['id'].toString();
-      widget.carts[ii]['options']['seller'] = widget.carts[ii]['options']['seller'].toString();
+      widget.carts[ii]['options']['store1'] = c.join(',');
+      widget.carts[ii]['options']['seller1'] =
+          widget.carts[ii]['user_id'].toString() == 'false'
+              ? '0'
+              : widget.carts[ii]['user_id']['id'].toString();
+      widget.carts[ii]['options']['seller'] =
+          widget.carts[ii]['options']['seller'].toString();
     }
     Map<String, dynamic> dataforcalculateshipping = {
       "lat": Addresslist[i]['lat'].toString(),
       "lng": Addresslist[i]['lng'].toString(),
-      "city":Addresslist[i]['city'].toString(),
+      "city": Addresslist[i]['city'].toString(),
       "cartItems": convert.jsonEncode(widget.carts),
-      "is_app":"1",
+      "is_app": "1",
     };
 
     log('dataforcalculateshipping...........${dataforcalculateshipping}');
@@ -491,23 +486,24 @@ getCity()async{
         context: context,
         showSuccessMessage: false);
 
-    log("calculateshippingApiresponse............" +
-        res.toString());
-    log("shipping_cost............" +
-        res['shipping_cost'].toString());
+    log("calculateshippingApiresponse............" + res.toString());
+    log("shipping_cost............" + res['shipping_cost'].toString());
 
     if (res['status'].toString() == '1') {
       shippingcost = double.parse(res['shipping_cost'].toString());
       loadingHide(context);
-      if(shippingcost==0){
-       await _showMyDialog();
-      Addresslist[i]['isSelected']=false;
+      if (res['is_available'] == 0) {
+        shippingcost=0;
+        await _showMyDialog();
+        Addresslist[i]['isSelected'] = false;
+
       }
-      sum = Grandtotal+shippingcost;
+      sum = Grandtotal + shippingcost;
       load == false;
-      setState(() {     });
+      setState(() {});
     }
   }
+
   Future<void> _showMyDialog() async {
     return showDialog<void>(
       context: context,
@@ -527,7 +523,6 @@ getCity()async{
             TextButton(
               child: const Text('Ok'),
               onPressed: () {
-
                 Navigator.of(context).pop();
               },
             ),
@@ -536,6 +531,7 @@ getCity()async{
       },
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -631,7 +627,9 @@ getCity()async{
                         Column(children: [
                           Text(
                             // load==true?'loading....':
-                          shippingcost==''?'Not calculate yet':'\$${shippingcost}',
+                            shippingcost == ''
+                                ? 'Not calculate yet'
+                                : '\$${shippingcost}',
                             // '\$${shippingcost}?"Not calculate yet"',
                             style: TextStyle(
                               fontSize: 13,
@@ -685,7 +683,7 @@ getCity()async{
             vSizedBox,
             Container(
               decoration: BoxDecoration(
-                  color: MyColors.primaryColor,
+                  color: Color(0xff004173),
                   borderRadius: BorderRadius.circular(10)),
               child: ListTile(
                 onTap: () {
@@ -721,6 +719,8 @@ getCity()async{
                       controller: firstnameController,
                       hintText: 'First Name',
                       enabled: false,
+                      borderradius: 15,
+                      borderColor: Color(0xff00b7ff),
                     ),
                   ),
                   SizedBox(
@@ -731,6 +731,8 @@ getCity()async{
                       controller: lastnameController,
                       hintText: 'last Name',
                       enabled: false,
+                      borderradius: 15,
+                      borderColor: Color(0xff00b7ff),
                     ),
                   ),
                 ],
@@ -740,34 +742,55 @@ getCity()async{
               controller: emailController,
               hintText: 'Email',
               enabled: false,
+              borderradius: 15,
+              borderColor: Color(0xff00b7ff),
             ),
             Row(
               children: [
-
                 Expanded(
                   child: CustomTextField(
                     controller: phonenoController,
                     // keyboardType: TextInputType.number,
                     hintText: 'Whatsapp Number',
+                    borderradius: 15,
+                    borderColor: Color(0xff00b7ff),
                     // prefixIcon: 'assets/images/dashicons_whatsapp.png',
                   ),
                 )
               ],
             ),
-            if(widget.ccustomer!['password_set'].toString()=='0')
-            CustomTextField(
-                obscureText: true,
-
-                controller: passwordController, hintText: 'Set Password'),
-            vSizedBox,
-            if(widget.ccustomer!['password_set'].toString()=='0')
+            if (widget.ccustomer!['password_set'].toString() == '0')
               CustomTextField(
-                obscureText: true,
-                  controller: reenterpasswordController, hintText: 'Re enter Password'),
+                  obscureText: isObscure,
+                  borderradius: 15,
+                  borderColor: Color(0xff00b7ff),
+                  controller: passwordController,
+                  suffixIcon: isObscure?'assets/images/view.png':'assets/images/hidden.png',
+                  suffixAction: (){
+                    setState(() {
+                      isObscure=!isObscure;
+                    });
+                  },
+                  hintText: 'Set Password'),
+            vSizedBox,
+            if (widget.ccustomer!['password_set'].toString() == '0')
+              CustomTextField(
+                  obscureText: isObscurePas,
+                  borderradius: 15,
+                  borderColor: Color(0xff00b7ff),
+                  controller: reenterpasswordController,
+                  suffixIcon: isObscurePas?'assets/images/view.png':'assets/images/hidden.png',
+                  hintText: 'Re enter Password',
+                suffixAction: (){
+                    setState(() {
+                      isObscurePas=!isObscurePas;
+                    });
+                },
+              ),
             vSizedBox,
             Container(
               decoration: BoxDecoration(
-                  color: MyColors.primaryColor,
+                  color: Color(0xff004173),
                   borderRadius: BorderRadius.circular(10)),
               child: ListTile(
                 onTap: () async {
@@ -777,219 +800,259 @@ getCity()async{
                   await showDialog(
                     context: context,
                     builder: (context) {
-                      return StatefulBuilder(
-                        builder: (context,setState) {
-                          return Dialog(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(0)),
-                            elevation: 16,
-                            child: Container(
-                              padding: EdgeInsets.all(10),
-                              height:450.0,
-                              width: 500.0,
-                              child: ListView(
-                                children: <Widget>[
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text('Add Address',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                                      GestureDetector(
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: Align(
-                                          alignment: Alignment.topRight,
-                                          child: Icon(
-                                            Icons.close,
-                                            color: Colors.black,
+                      return StatefulBuilder(builder: (context, setState) {
+                        return Dialog(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(0)),
+                          elevation: 16,
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            height: 450.0,
+                            width: 500.0,
+                            child: ListView(
+                              children: <Widget>[
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Add Address',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Align(
+                                        alignment: Alignment.topRight,
+                                        child: Icon(
+                                          Icons.close,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                SizedBox(height: 20),
+                                // Container(
+                                //   // height: 48,
+                                //   width: double.infinity,
+                                //   // margin: EdgeInsets.symmetric(
+                                //   //     horizontal:16 ,vertical:8 ),
+                                //   decoration: BoxDecoration(
+                                //       color: MyColors.whiteColor,
+                                //       border: Border.all(
+                                //           color: MyColors.primaryColor),
+                                //       borderRadius: BorderRadius.circular(30)),
+                                //   padding: EdgeInsets.only(
+                                //       left: 10, right: 10, top: 5, bottom: 5),
+                                //   child: SearchLocation(
+                                //     controller:searchlocationController,
+                                //     apiKey:
+                                //         'AIzaSyABk-0Al27H9Ap_Rtti2t0ePxOLvl5QFzk',
+                                //     onSelected: (value) async {
+                                //       print('onselectedcalled');
+                                //       var temp = await value.geolocation;
+                                //       addressController.text = value.description;
+                                //       print('addressControllercalue---------${value.description}');
+                                //       LatLng l = temp!.coordinates;
+                                //       String p = value.placeId;
+                                //       print("value from country   ${value}");
+                                //       print(
+                                //           "value from country   ${l.longitude}");
+                                //       print("value from place   ${p.toString()}");
+                                //       // print("value from state   }");
+                                //       print(
+                                //           "value from city   ${value.description}");
+                                //       // print("lat   ${l.latitude.toString()}");
+                                //       // print("long   ${l.longitude.toString()}");
+                                //       lat = l.latitude.toString();
+                                //       long = l.longitude.toString();
+                                //       print("latlocal   ${lat}");
+                                //       print("longlocal   ${long}");
+                                //       List<Placemark> placemarks =
+                                //           await placemarkFromCoordinates(
+                                //               l.latitude, l.longitude);
+                                //       print(
+                                //           "placemarks   ${placemarks[0].administrativeArea}");
+                                //       searchlocationController.text=value.description;
+                                //       countryController.text = placemarks[0].country.toString();
+                                //       stateController.text = placemarks[0].administrativeArea.toString();
+                                //       cityController.text = placemarks[0].locality.toString();
+                                //       zipcodeController.text = placemarks[0].postalCode.toString();
+                                //       },
+                                //   ),
+                                // ),
+                                // SizedBox(height: 10),
+                                Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.only(left: 10),
+                                  decoration: BoxDecoration(
+                                    color: MyColors.whitelight,
+                                    border: Border.all(
+                                        color: MyColors.primaryColor),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: DropdownButton<String>(
+                                    underline: Container(
+                                      height: 0,
+                                    ),
+                                    hint: Text('Select City'),
+                                    isExpanded: true,
+                                    value: newCity,
+                                    icon: Icon(
+                                      Icons.keyboard_arrow_down_outlined,
+                                    ),
+                                    elevation: 16,
+
+                                    alignment: Alignment.centerLeft,
+                                    style: const TextStyle(color: Colors.black),
+
+                                    onChanged: (String? newValue) async {
+                                      newCity = newValue!;
+                                      print('id' + newCity.toString());
+                                      if (newCity != null) {
+                                        List<Location> locations =
+                                            await locationFromAddress(newCity!);
+                                        print(
+                                            "locations ---------${locations}");
+                                        lat = locations[0].latitude.toString();
+                                        long =
+                                            locations[0].longitude.toString();
+                                        List<Placemark> placemarks =
+                                            await placemarkFromCoordinates(
+                                                double.parse(lat.toString()),
+                                                double.parse(long.toString()));
+                                        countryController.text =
+                                            placemarks[0].country.toString();
+                                        stateController.text = placemarks[0]
+                                            .administrativeArea
+                                            .toString();
+                                        cityController.text =
+                                            placemarks[0].locality.toString();
+                                        zipcodeController.text =
+                                            placemarks[0].postalCode.toString();
+                                        print(
+                                            "placemarks--------------------${placemarks}");
+                                      }
+                                      setState(() {
+                                        // getSubCategory(subCatType);
+                                      });
+                                    },
+
+                                    items: Cities.map((e) {
+                                      return DropdownMenuItem<String>(
+                                        value: e['city_name'],
+                                        child: Text(e['city_name']),
+                                      );
+                                    }).toList(),
+
+                                    //     .map<DropdownMenuItem<String>>((String value) {
+                                    //   return DropdownMenuItem<String>(
+                                    //     value: value,
+                                    //     child: Text(value),
+                                    //   );
+                                    // }).toList(),
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+
+                                CustomTextField(
+                                  controller: newAddress,
+                                  // keyboardType: TextInputType.number,
+                                  hintText: 'Address',
+                                  // prefixIcon: 'assets/images/dashicons_whatsapp.png',
+                                ),
+
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: TextButton(
+                                      onPressed: () async {
+                                        var placemarks = await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                MapSample(),
                                           ),
+                                        );
+                                        print(
+                                            'placemarksdddddmizan------${placemarks} ss');
+                                        print(
+                                            'placemarksaddress------${placemarks['address']}');
+
+                                        lat = placemarks['lat'].toString();
+                                        print(
+                                            'manish...................1');
+                                        long = placemarks['long'].toString();
+                                        print(
+                                            'manish...................2');
+                                        newAddress.text = placemarks['address'];
+                                        print(
+                                            'manish...................3');
+                                        countryController.text =
+                                            placemarks['country'];
+                                        print(
+                                            'manish...................4');
+                                        stateController.text =
+                                            placemarks['state'];
+                                        print(
+                                            'manish...................5');
+                                        cityController.text =
+                                            placemarks['city'];
+                                        print(
+                                            'manish...................6');
+                                        zipcodeController.text =
+                                            placemarks['pincode'];
+                                        print(
+                                            'manish...................7');
+                                        print(
+                                            'manish...................8-----------${zipcodeController.text}');
+                                        // await MyGlobalKeys.searchLocationKey.currentState?.updateTextField(address);
+                                      },
+                                      child: Text('Choose from Map')),
+                                ),
+                                // hSizedBox2,
+                                Container(
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: CustomTextField(
+                                          controller: cityController,
+                                          hintText: 'City',
+                                          enabled: false,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Expanded(
+                                        child: CustomTextField(
+                                          controller: stateController,
+                                          hintText: 'State / Provience',
+                                          enabled: false,
                                         ),
                                       ),
                                     ],
                                   ),
-
-                                  SizedBox(height: 20),
-                                  // Container(
-                                  //   // height: 48,
-                                  //   width: double.infinity,
-                                  //   // margin: EdgeInsets.symmetric(
-                                  //   //     horizontal:16 ,vertical:8 ),
-                                  //   decoration: BoxDecoration(
-                                  //       color: MyColors.whiteColor,
-                                  //       border: Border.all(
-                                  //           color: MyColors.primaryColor),
-                                  //       borderRadius: BorderRadius.circular(30)),
-                                  //   padding: EdgeInsets.only(
-                                  //       left: 10, right: 10, top: 5, bottom: 5),
-                                  //   child: SearchLocation(
-                                  //     controller:searchlocationController,
-                                  //     apiKey:
-                                  //         'AIzaSyABk-0Al27H9Ap_Rtti2t0ePxOLvl5QFzk',
-                                  //     onSelected: (value) async {
-                                  //       print('onselectedcalled');
-                                  //       var temp = await value.geolocation;
-                                  //       addressController.text = value.description;
-                                  //       print('addressControllercalue---------${value.description}');
-                                  //       LatLng l = temp!.coordinates;
-                                  //       String p = value.placeId;
-                                  //       print("value from country   ${value}");
-                                  //       print(
-                                  //           "value from country   ${l.longitude}");
-                                  //       print("value from place   ${p.toString()}");
-                                  //       // print("value from state   }");
-                                  //       print(
-                                  //           "value from city   ${value.description}");
-                                  //       // print("lat   ${l.latitude.toString()}");
-                                  //       // print("long   ${l.longitude.toString()}");
-                                  //       lat = l.latitude.toString();
-                                  //       long = l.longitude.toString();
-                                  //       print("latlocal   ${lat}");
-                                  //       print("longlocal   ${long}");
-                                  //       List<Placemark> placemarks =
-                                  //           await placemarkFromCoordinates(
-                                  //               l.latitude, l.longitude);
-                                  //       print(
-                                  //           "placemarks   ${placemarks[0].administrativeArea}");
-                                  //       searchlocationController.text=value.description;
-                                  //       countryController.text = placemarks[0].country.toString();
-                                  //       stateController.text = placemarks[0].administrativeArea.toString();
-                                  //       cityController.text = placemarks[0].locality.toString();
-                                  //       zipcodeController.text = placemarks[0].postalCode.toString();
-                                  //       },
-                                  //   ),
-                                  // ),
-                                  // SizedBox(height: 10),
-                                  Container(
-                                    width: double.infinity,
-                                    padding: EdgeInsets.only(left: 10),
-                                    decoration: BoxDecoration(
-                                      color: MyColors.whitelight,
-                                      border: Border.all(color:MyColors.primaryColor),
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    child: DropdownButton<String>(
-                                      underline: Container(
-                                        height: 0,
-                                      ),
-                                      hint: Text('Select City'),
-                                      isExpanded: true,
-                                      value: newCity,
-                                      icon: Icon(
-                                        Icons.keyboard_arrow_down_outlined,
-                                      ),
-                                      elevation: 16,
-
-                                      alignment: Alignment.centerLeft,
-                                      style: const TextStyle(color: Colors.black),
-
-                                      onChanged: (String? newValue) async{
-
-                                          newCity = newValue!;
-                                          print('id' + newCity.toString());
-                                          if(newCity!=null){
-                                            List<Location> locations = await locationFromAddress(newCity!);
-                                            print("locations ---------${locations}");
-                                            lat = locations[0].latitude.toString();
-                                            long = locations[0].longitude.toString();
-                                            List<Placemark> placemarks = await placemarkFromCoordinates(double.parse(lat.toString()), double.parse(long.toString()));
-                                            countryController.text = placemarks[0].country.toString();
-                                            stateController.text = placemarks[0].administrativeArea.toString();
-                                            cityController.text = placemarks[0].locality.toString();
-                                            zipcodeController.text = placemarks[0].postalCode.toString();
-                                         print("placemarks--------------------${placemarks}");
-                                          }
-                                          setState(() {  // getSubCategory(subCatType);
-                                        });
-                                      },
-
-                                      items: Cities.map((e) {
-                                        return DropdownMenuItem<String>(
-                                          value: e['city_name'],
-                                          child: Text(e['city_name']),
-                                        );
-                                      }).toList(),
-
-
-                                      //     .map<DropdownMenuItem<String>>((String value) {
-                                      //   return DropdownMenuItem<String>(
-                                      //     value: value,
-                                      //     child: Text(value),
-                                      //   );
-                                      // }).toList(),
-                                    ),
-                                  ),
-                                  SizedBox(height: 10),
-
-                                  CustomTextField(
-                                    controller: newAddress,
-                                    // keyboardType: TextInputType.number,
-                                    hintText: 'Address',
-                                    // prefixIcon: 'assets/images/dashicons_whatsapp.png',
-                                  ),
-
-                                  Align(
-                                    alignment: Alignment.topRight,
-                                    child: TextButton(onPressed: ()async{
-                                      var placemarks = await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (BuildContext context) => MapSample(),
-                                        ),
-                                      );
-                                      print('placemarksdddddmizan------${placemarks} ss');
-                                      print('placemarksaddress------${placemarks['address']}');
-
-                                      lat=placemarks['lat'].toString();
-                                      long=placemarks['long'].toString();
-                                      newAddress.text=placemarks['address'];
-                                      countryController.text = placemarks['country'];
-                                      stateController.text = placemarks['state'];
-                                      cityController.text = placemarks['city'];
-                                      zipcodeController.text = placemarks['pincode'];
-                                     // await MyGlobalKeys.searchLocationKey.currentState?.updateTextField(address);
-
-                                      },
-                                        child: Text('Choose from Map')),
-                                  ),
-                                  // hSizedBox2,
-                                  Container(
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: CustomTextField(
-                                            controller: cityController,
-                                            hintText: 'City',
-                                            enabled: false,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Expanded(
-                                          child: CustomTextField(
-                                            controller: stateController,
-                                            hintText: 'State / Provience',
-                                            enabled: false,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  CustomTextField(
-                                    controller: countryController,
-                                    hintText: 'Country',
-                                    enabled: false,
-                                  ),
-                                  CustomTextField(
-                                      controller: zipcodeController,
-                                      hintText: 'Postal / Zip Code'),
-                                  hSizedBox2,
-                                  ElevatedButton(
-                                    onPressed: () async {
-                                      if(newAddress.text==''){
-                                        showSnackbar(context, 'Please Enter your Address.');
-                                      }
-                                      else{
+                                ),
+                                CustomTextField(
+                                  controller: countryController,
+                                  hintText: 'Country',
+                                  enabled: false,
+                                ),
+                                CustomTextField(
+                                    controller: zipcodeController,
+                                    hintText: 'Postal / Zip Code'),
+                                hSizedBox2,
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    if (newAddress.text == '') {
+                                      showSnackbar(context,
+                                          'Please Enter your Address.');
+                                    } else {
                                       Map<String, dynamic> data = {
                                         "user_id": widget.ccustomer!['id'],
                                         "lat": lat.toString(),
@@ -1002,8 +1065,6 @@ getCity()async{
                                         "country": countryController.text,
                                         "zip": zipcodeController.text,
 
-
-
                                         // "cartItems": convert.jsonEncode(widget.carts)
                                       };
                                       loadingShow(context);
@@ -1013,44 +1074,40 @@ getCity()async{
                                           body: data,
                                           context: context,
                                           showSuccessMessage: true);
+                                      loadingHide(context);
                                       if (res['status'].toString() == '1') {
                                         Navigator.pop(context, true);
-                                        newAddress.text='';
-                                        cityController.text='';
-                                        stateController.text='';
-                                        countryController.text='';
-                                        zipcodeController.text='';
-                                        setState((){});
+                                        newAddress.text = '';
+                                        cityController.text = '';
+                                        stateController.text = '';
+                                        countryController.text = '';
+                                        zipcodeController.text = '';
+                                        setState(() {});
                                       }
                                       print("Apiresponse.................");
-                                      loadingHide(context);
+
                                       print("Apiresponse............" +
                                           res.toString());
-                                      }
-                                    },
-                                    child: Text('Add'),
-                                    style: ElevatedButton.styleFrom(
-                                      shape: StadiumBorder(),
-                                      primary: MyColors.primaryColor,
-                                    ),
+                                    }
+                                  },
+                                  child: Text('Add'),
+                                  style: ElevatedButton.styleFrom(
+                                    shape: StadiumBorder(),
+                                    primary: MyColors.primaryColor,
                                   ),
-                                  hSizedBox2,
-
-
-
-                                ],
-                              ),
+                                ),
+                                hSizedBox2,
+                              ],
                             ),
-                          );
-                        }
-                      );
+                          ),
+                        );
+                      });
                     },
-                  ).then((res){
-                    if(res==true){
-                      getaddress();
+                  ).then((res) {
+                    if (res == true) {
+                      getaddress(true);
                     }
                   });
-
                 },
                 leading: Icon(
                   Icons.add,
@@ -1076,243 +1133,257 @@ getCity()async{
             for (int i = 0; i < Addresslist.length; i++)
               Row(children: [
                 Checkbox(
-               value:Addresslist[i]['isSelected'],
-               //    value:Addresslist[i]['isSelected']?true:false,
+                  value: Addresslist[i]['isSelected'],
+                  //    value:Addresslist[i]['isSelected']?true:false,
                   onChanged: (value) {
-                 setState(() {
-                   if(value!=null){
-                     // selectedIndexaddress =int.parse(Addresslist[i]['id'].toString());
-                     if(value==true){
-                       selected(Addresslist[i]['id'],value);
-                     }
+                    setState(() {
+                      if (value != null) {
+                        // selectedIndexaddress =int.parse(Addresslist[i]['id'].toString());
+                        if (value == true) {
+                          selected(Addresslist[i]['id'], value);
+                        }
 
-                     Addresslist[i]['isSelected']= value;
-                     print(value);
-                   }
+                        // Addresslist[i]['isSelected']= value;
+                        Addresslist[i]['isSelected'] = value;
+                        // Addresslist=[];
+                        print(value);
+                      }
+                    });
+                  },
+                  // value: this.value,
+                  // onChanged: (value) {
+                  //   setState(() {
+                  //     this.value = value!;
+                  //     print(value);
+                  //   });
+                  // },
+                ),
+                Expanded(
+                    child: Text('${Addresslist[i]['address'].toString()}')),
+                TextButton(
+                    onPressed: () {},
+                    child: IconButton(
+                      onPressed: () async {
+                        showDialog(
+                            context: context,
+                            builder: (context1) {
+                              return AlertDialog(
+                                title: Text(
+                                  'Delete',
+                                ),
+                                content: Text('Are you sure, want to Delete?'),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () async {
+                                        // Map<String ,dynamic> data={
+                                        // 'user_id' : widget.ccustomer!['user_id'],
+                                        //   'address_id' : Addresslist[i]['id'].toString(),
+                                        // };
 
-                 });
-               },
-                          // value: this.value,
-                          // onChanged: (value) {
-                          //   setState(() {
-                          //     this.value = value!;
-                          //     print(value);
-                          //   });
-                          // },
-                        ),
+                                        // ?user_id=86&address_id=2
+                                        var res = await Webservices.getData(
+                                          '${ApiUrls.delete_address}?address_id=${Addresslist[i]['id'].toString()}&user_id=${Addresslist[i]['user_id'].toString()}',
+                                        );
+                                        var jsonResponse =
+                                            convert.jsonDecode(res.body);
 
-                Expanded(child: Text('${Addresslist[i]['address'].toString()}')),
-                TextButton(onPressed: (){},
-                    child:
-
-                    IconButton(
-                      onPressed: ()async{
-                        showDialog(context: context, builder: (context1){
-                          return AlertDialog(
-
-                            title: Text('Delete',),
-                            content: Text('Are you sure, want to Delete?'),
-                            actions: [
-                              TextButton(
-                                  onPressed: () async {
-                                   // Map<String ,dynamic> data={
-                                   // 'user_id' : widget.ccustomer!['user_id'],
-                                   //   'address_id' : Addresslist[i]['id'].toString(),
-                                   // };
-
-
-                                    // ?user_id=86&address_id=2
-                                   var res = await Webservices.getData('${ApiUrls.delete_address}?address_id=${Addresslist[i]['id'].toString()}&user_id=${Addresslist[i]['user_id'].toString()}',);
-                                   var jsonResponse = convert.jsonDecode(res.body);
-
-                                   if(jsonResponse['status'].toString()=='1'){
-                                     setState((){
-                                       getaddress();
-                                     });
-                                     Navigator.pop(context1);
-                                     showSnackbar(context, jsonResponse['message'].toString());
-                                   }
-                                   else{
-                                     Navigator.pop(context1);
-                                     showSnackbar(context, jsonResponse['message'].toString());
-                                   }
-                                  }, child: Text('Delete')),
-                              TextButton(onPressed: () async {
-
-                                Navigator.pop(context1);
-                              }, child: Text('cancel')
-                              ),
-                            ],
-                          );
-                        });
+                                        if (jsonResponse['status'].toString() ==
+                                            '1') {
+                                          setState(() {
+                                            getaddress(false);
+                                          });
+                                          Navigator.pop(context1);
+                                          showSnackbar(
+                                              context,
+                                              jsonResponse['message']
+                                                  .toString());
+                                        } else {
+                                          Navigator.pop(context1);
+                                          showSnackbar(
+                                              context,
+                                              jsonResponse['message']
+                                                  .toString());
+                                        }
+                                      },
+                                      child: Text('Delete')),
+                                  TextButton(
+                                      onPressed: () async {
+                                        Navigator.pop(context1);
+                                      },
+                                      child: Text('cancel')),
+                                ],
+                              );
+                            });
                       },
-                      icon: Icon(Icons.delete ,color: Colors.red,),
+                      icon: Icon(
+                        Icons.delete,
+                        color: Colors.red,
+                      ),
                     )
                     // Text('Delete')
-    )
-              ],
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly),
-              // for (int i = 0; i < Addresslist.length; i++)
-              //   Container(
-              //     margin: new EdgeInsets.all(10.0),
-              //     child: GestureDetector(
-              //       onTap: () async {
-              //         setState(() {
-              //           log('selectedIndexaddressa....${selectedIndexaddress}');
-              //           selectedIndexaddress = i;
-              //           log('selectedIndexaddress....${selectedIndexaddress}');
-              //           log('id....${Addresslist[i]['id'].toString()}');
-              //           log('latttttttt....${Addresslist[i]['lat'].toString()}');
-              //           log('longggggg....${Addresslist[i]['lng'].toString()}');
-              //         });
-              //         print("adres selected");
-              //         for(int ii=0;ii<widget.carts.length;ii++){
-              //           log('checkmizan  cart length- ${widget.carts.length.toString()} - ${ii.toString()}');
-              //           var c = [];
-              //           for(int j=0;j<widget.carts[ii]['options']['store'].length;j++){
-              //             c.add(widget.carts[ii]['options']['store'][j]['id']);
-              //           }
-              //           widget.carts[ii]['options']['store1']= c.join(',');
-              //           // Map  m = convert.jsonDecode(widget.carts[i]['options']['seller']);
-              //           // print("seller------"+m["id"].toString());
-              //           // print('aaa ${ widget.carts[i]['options']['seller1']}');
-              //           // print('bbb ${ widget.carts[i]['options']['seller']}');
-              //           // print('ccc ${ widget.carts[i]['options']['seller'].runtimeType}');
-              //
-              //           log('checkmizan - ${widget.carts[ii]['options']['seller']}');
-              //           widget.carts[ii]['options']['seller1'] = widget.carts[ii]['options']['seller'].toString()=='false'?'0': int.parse(widget.carts[ii]['options']['seller']['id']);
-              //           // log('checkmizan1 - ${widget.carts[ii]['options']['seller']['id']}');
-              //           widget.carts[ii]['options']['seller'] = widget.carts[ii]['options']['seller'].toString();
-              //           // log('checkmizan2 - ${widget.carts[ii]['options']['seller1']}');
-              //         }
-              //         log('seller------'+widget.carts.toString());
-              //
-              //         Map<String, dynamic> dataforcalculateshipping = {
-              //           "lat": Addresslist[i]['lat'].toString(),
-              //           "lng": Addresslist[i]['lng'].toString(),
-              //           "cartItems": convert.jsonEncode(widget.carts)
-              //         };
-              //         // loadingShow(context);
-              //         log('dataforcalculateshipping...........${dataforcalculateshipping}');
-              //         var res = await Webservices.postData(
-              //             apiUrl: ApiUrls.calculateshipping,
-              //             body: dataforcalculateshipping,
-              //             context: context,
-              //             showSuccessMessage: false);
-              //         // loadingHide(context);
-              //         log("calculateshippingApiresponse............" +
-              //             res.toString());
-              //         log("shippingcost............" +
-              //             res['shipping_cost'].toString());
-              //         shippingcost =
-              //             double.parse(res['shipping_cost'].toString());
-              //         log("shippingcostttttforuse............${shippingcost}");
-              //
-              //         if (res['status'].toString() == '1') {
-              //           shippingcost =
-              //               double.parse(res['shipping_cost'].toString());
-              //           log(
-              //               "shippingcostttttforuse............${shippingcost}");
-              //           setState(() {
-              //             shippingcost =
-              //                 double.parse(res['shipping_cost'].toString());
-              //             log(
-              //                 "shippingcostttttforuse............${shippingcost}");
-              //           });
-              //           log("shippingcost............${shippingcost}");
-              //           sum = Grandtotal+shippingcost;
-              //           log('sum------${sum}');
-              //         }
-              //       },
-              //       child: adderss(
-              //           isselected: selectedIndexaddress == i,
-              //           text: Addresslist[i]['address'].toString()),
-              //     ),
-              //   ),    // for (int i = 0; i < Addresslist.length; i++)
-              //   Container(
-              //     margin: new EdgeInsets.all(10.0),
-              //     child: GestureDetector(
-              //       onTap: () async {
-              //         setState(() {
-              //           log('selectedIndexaddressa....${selectedIndexaddress}');
-              //           selectedIndexaddress = i;
-              //           log('selectedIndexaddress....${selectedIndexaddress}');
-              //           log('id....${Addresslist[i]['id'].toString()}');
-              //           log('latttttttt....${Addresslist[i]['lat'].toString()}');
-              //           log('longggggg....${Addresslist[i]['lng'].toString()}');
-              //         });
-              //         print("adres selected");
-              //         for(int ii=0;ii<widget.carts.length;ii++){
-              //           log('checkmizan  cart length- ${widget.carts.length.toString()} - ${ii.toString()}');
-              //           var c = [];
-              //           for(int j=0;j<widget.carts[ii]['options']['store'].length;j++){
-              //             c.add(widget.carts[ii]['options']['store'][j]['id']);
-              //           }
-              //           widget.carts[ii]['options']['store1']= c.join(',');
-              //           // Map  m = convert.jsonDecode(widget.carts[i]['options']['seller']);
-              //           // print("seller------"+m["id"].toString());
-              //           // print('aaa ${ widget.carts[i]['options']['seller1']}');
-              //           // print('bbb ${ widget.carts[i]['options']['seller']}');
-              //           // print('ccc ${ widget.carts[i]['options']['seller'].runtimeType}');
-              //
-              //           log('checkmizan - ${widget.carts[ii]['options']['seller']}');
-              //           widget.carts[ii]['options']['seller1'] = widget.carts[ii]['options']['seller'].toString()=='false'?'0': int.parse(widget.carts[ii]['options']['seller']['id']);
-              //           // log('checkmizan1 - ${widget.carts[ii]['options']['seller']['id']}');
-              //           widget.carts[ii]['options']['seller'] = widget.carts[ii]['options']['seller'].toString();
-              //           // log('checkmizan2 - ${widget.carts[ii]['options']['seller1']}');
-              //         }
-              //         log('seller------'+widget.carts.toString());
-              //
-              //         Map<String, dynamic> dataforcalculateshipping = {
-              //           "lat": Addresslist[i]['lat'].toString(),
-              //           "lng": Addresslist[i]['lng'].toString(),
-              //           "cartItems": convert.jsonEncode(widget.carts)
-              //         };
-              //         // loadingShow(context);
-              //         log('dataforcalculateshipping...........${dataforcalculateshipping}');
-              //         var res = await Webservices.postData(
-              //             apiUrl: ApiUrls.calculateshipping,
-              //             body: dataforcalculateshipping,
-              //             context: context,
-              //             showSuccessMessage: false);
-              //         // loadingHide(context);
-              //         log("calculateshippingApiresponse............" +
-              //             res.toString());
-              //         log("shippingcost............" +
-              //             res['shipping_cost'].toString());
-              //         shippingcost =
-              //             double.parse(res['shipping_cost'].toString());
-              //         log("shippingcostttttforuse............${shippingcost}");
-              //
-              //         if (res['status'].toString() == '1') {
-              //           shippingcost =
-              //               double.parse(res['shipping_cost'].toString());
-              //           log(
-              //               "shippingcostttttforuse............${shippingcost}");
-              //           setState(() {
-              //             shippingcost =
-              //                 double.parse(res['shipping_cost'].toString());
-              //             log(
-              //                 "shippingcostttttforuse............${shippingcost}");
-              //           });
-              //           log("shippingcost............${shippingcost}");
-              //           sum = Grandtotal+shippingcost;
-              //           log('sum------${sum}');
-              //         }
-              //       },
-              //       child: adderss(
-              //           isselected: selectedIndexaddress == i,
-              //           text: Addresslist[i]['address'].toString()),
-              //     ),
-              //   ),
+                    )
+              ], mainAxisAlignment: MainAxisAlignment.spaceEvenly),
+            // for (int i = 0; i < Addresslist.length; i++)
+            //   Container(
+            //     margin: new EdgeInsets.all(10.0),
+            //     child: GestureDetector(
+            //       onTap: () async {
+            //         setState(() {
+            //           log('selectedIndexaddressa....${selectedIndexaddress}');
+            //           selectedIndexaddress = i;
+            //           log('selectedIndexaddress....${selectedIndexaddress}');
+            //           log('id....${Addresslist[i]['id'].toString()}');
+            //           log('latttttttt....${Addresslist[i]['lat'].toString()}');
+            //           log('longggggg....${Addresslist[i]['lng'].toString()}');
+            //         });
+            //         print("adres selected");
+            //         for(int ii=0;ii<widget.carts.length;ii++){
+            //           log('checkmizan  cart length- ${widget.carts.length.toString()} - ${ii.toString()}');
+            //           var c = [];
+            //           for(int j=0;j<widget.carts[ii]['options']['store'].length;j++){
+            //             c.add(widget.carts[ii]['options']['store'][j]['id']);
+            //           }
+            //           widget.carts[ii]['options']['store1']= c.join(',');
+            //           // Map  m = convert.jsonDecode(widget.carts[i]['options']['seller']);
+            //           // print("seller------"+m["id"].toString());
+            //           // print('aaa ${ widget.carts[i]['options']['seller1']}');
+            //           // print('bbb ${ widget.carts[i]['options']['seller']}');
+            //           // print('ccc ${ widget.carts[i]['options']['seller'].runtimeType}');
+            //
+            //           log('checkmizan - ${widget.carts[ii]['options']['seller']}');
+            //           widget.carts[ii]['options']['seller1'] = widget.carts[ii]['options']['seller'].toString()=='false'?'0': int.parse(widget.carts[ii]['options']['seller']['id']);
+            //           // log('checkmizan1 - ${widget.carts[ii]['options']['seller']['id']}');
+            //           widget.carts[ii]['options']['seller'] = widget.carts[ii]['options']['seller'].toString();
+            //           // log('checkmizan2 - ${widget.carts[ii]['options']['seller1']}');
+            //         }
+            //         log('seller------'+widget.carts.toString());
+            //
+            //         Map<String, dynamic> dataforcalculateshipping = {
+            //           "lat": Addresslist[i]['lat'].toString(),
+            //           "lng": Addresslist[i]['lng'].toString(),
+            //           "cartItems": convert.jsonEncode(widget.carts)
+            //         };
+            //         // loadingShow(context);
+            //         log('dataforcalculateshipping...........${dataforcalculateshipping}');
+            //         var res = await Webservices.postData(
+            //             apiUrl: ApiUrls.calculateshipping,
+            //             body: dataforcalculateshipping,
+            //             context: context,
+            //             showSuccessMessage: false);
+            //         // loadingHide(context);
+            //         log("calculateshippingApiresponse............" +
+            //             res.toString());
+            //         log("shippingcost............" +
+            //             res['shipping_cost'].toString());
+            //         shippingcost =
+            //             double.parse(res['shipping_cost'].toString());
+            //         log("shippingcostttttforuse............${shippingcost}");
+            //
+            //         if (res['status'].toString() == '1') {
+            //           shippingcost =
+            //               double.parse(res['shipping_cost'].toString());
+            //           log(
+            //               "shippingcostttttforuse............${shippingcost}");
+            //           setState(() {
+            //             shippingcost =
+            //                 double.parse(res['shipping_cost'].toString());
+            //             log(
+            //                 "shippingcostttttforuse............${shippingcost}");
+            //           });
+            //           log("shippingcost............${shippingcost}");
+            //           sum = Grandtotal+shippingcost;
+            //           log('sum------${sum}');
+            //         }
+            //       },
+            //       child: adderss(
+            //           isselected: selectedIndexaddress == i,
+            //           text: Addresslist[i]['address'].toString()),
+            //     ),
+            //   ),    // for (int i = 0; i < Addresslist.length; i++)
+            //   Container(
+            //     margin: new EdgeInsets.all(10.0),
+            //     child: GestureDetector(
+            //       onTap: () async {
+            //         setState(() {
+            //           log('selectedIndexaddressa....${selectedIndexaddress}');
+            //           selectedIndexaddress = i;
+            //           log('selectedIndexaddress....${selectedIndexaddress}');
+            //           log('id....${Addresslist[i]['id'].toString()}');
+            //           log('latttttttt....${Addresslist[i]['lat'].toString()}');
+            //           log('longggggg....${Addresslist[i]['lng'].toString()}');
+            //         });
+            //         print("adres selected");
+            //         for(int ii=0;ii<widget.carts.length;ii++){
+            //           log('checkmizan  cart length- ${widget.carts.length.toString()} - ${ii.toString()}');
+            //           var c = [];
+            //           for(int j=0;j<widget.carts[ii]['options']['store'].length;j++){
+            //             c.add(widget.carts[ii]['options']['store'][j]['id']);
+            //           }
+            //           widget.carts[ii]['options']['store1']= c.join(',');
+            //           // Map  m = convert.jsonDecode(widget.carts[i]['options']['seller']);
+            //           // print("seller------"+m["id"].toString());
+            //           // print('aaa ${ widget.carts[i]['options']['seller1']}');
+            //           // print('bbb ${ widget.carts[i]['options']['seller']}');
+            //           // print('ccc ${ widget.carts[i]['options']['seller'].runtimeType}');
+            //
+            //           log('checkmizan - ${widget.carts[ii]['options']['seller']}');
+            //           widget.carts[ii]['options']['seller1'] = widget.carts[ii]['options']['seller'].toString()=='false'?'0': int.parse(widget.carts[ii]['options']['seller']['id']);
+            //           // log('checkmizan1 - ${widget.carts[ii]['options']['seller']['id']}');
+            //           widget.carts[ii]['options']['seller'] = widget.carts[ii]['options']['seller'].toString();
+            //           // log('checkmizan2 - ${widget.carts[ii]['options']['seller1']}');
+            //         }
+            //         log('seller------'+widget.carts.toString());
+            //
+            //         Map<String, dynamic> dataforcalculateshipping = {
+            //           "lat": Addresslist[i]['lat'].toString(),
+            //           "lng": Addresslist[i]['lng'].toString(),
+            //           "cartItems": convert.jsonEncode(widget.carts)
+            //         };
+            //         // loadingShow(context);
+            //         log('dataforcalculateshipping...........${dataforcalculateshipping}');
+            //         var res = await Webservices.postData(
+            //             apiUrl: ApiUrls.calculateshipping,
+            //             body: dataforcalculateshipping,
+            //             context: context,
+            //             showSuccessMessage: false);
+            //         // loadingHide(context);
+            //         log("calculateshippingApiresponse............" +
+            //             res.toString());
+            //         log("shippingcost............" +
+            //             res['shipping_cost'].toString());
+            //         shippingcost =
+            //             double.parse(res['shipping_cost'].toString());
+            //         log("shippingcostttttforuse............${shippingcost}");
+            //
+            //         if (res['status'].toString() == '1') {
+            //           shippingcost =
+            //               double.parse(res['shipping_cost'].toString());
+            //           log(
+            //               "shippingcostttttforuse............${shippingcost}");
+            //           setState(() {
+            //             shippingcost =
+            //                 double.parse(res['shipping_cost'].toString());
+            //             log(
+            //                 "shippingcostttttforuse............${shippingcost}");
+            //           });
+            //           log("shippingcost............${shippingcost}");
+            //           sum = Grandtotal+shippingcost;
+            //           log('sum------${sum}');
+            //         }
+            //       },
+            //       child: adderss(
+            //           isselected: selectedIndexaddress == i,
+            //           text: Addresslist[i]['address'].toString()),
+            //     ),
+            //   ),
             vSizedBox2,
 
-
-
-
             CustomTextField(
-                controller: specialController,
-                hintText: 'Special Instructions'),
+              controller: specialController,
+              hintText: 'Special Instructions',
+              borderradius: 15,
+              borderColor: Color(0xff00b7ff),
+            ),
             Row(
               children: <Widget>[
                 // SizedBox(
@@ -1327,27 +1398,77 @@ getCity()async{
                     });
                   },
                 ),
-                Row(
-                  children: [
-                    Text(
-                      'Read and Agree our  ',
+                Expanded(
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Read and Agree our  ',
                       style: TextStyle(
                         fontSize: 17.0,
                         color: Color(0xff969BA0),
                       ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: 'Terms & Conditions ',
+                          style: TextStyle(
+                              fontSize: 17.0, color: Color(0xffF72B50)),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        trems())),
+                        ),
+                        TextSpan(text: ' and '),
+                        TextSpan(
+                          text: 'Privacy & Policy',
+                          style: TextStyle(
+                              fontSize: 17.0, color: Color(0xffF72B50)),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        privacy())),
+                        ),
+                      ],
                     ),
-
-                    TextButton(onPressed: (){
-                      Navigator.of(context).push(MaterialPageRoute(
-                                builder: (BuildContext context) => trems()
-                            ));
-                    }, child:  Text(
-                      'Terms & Conditions ',
-                      style:
-                      TextStyle(fontSize: 17.0, color: Color(0xffF72B50)),
-                    ),)
-                  ],
-                ),
+                  ),
+                )
+                // Row(
+                //   children: [
+                //     Text(
+                //       'Read and Agree our  ',
+                //       style: TextStyle(
+                //         fontSize: 17.0,
+                //         color: Color(0xff969BA0),
+                //       ),
+                //     ),
+                //
+                //     TextButton(onPressed: (){
+                //       Navigator.of(context).push(MaterialPageRoute(
+                //                 builder: (BuildContext context) => trems()
+                //             ));
+                //     }, child:  Text(
+                //       'Terms & Conditions ',
+                //       style:
+                //       TextStyle(fontSize: 17.0, color: Color(0xffF72B50)),
+                //     ),),
+                //     Text(
+                //       ' and ',
+                //       style: TextStyle(
+                //         fontSize: 17.0,
+                //         color: Color(0xff969BA0),
+                //       ),
+                //     ),
+                //     TextButton(onPressed: (){
+                //       Navigator.of(context).push(MaterialPageRoute(
+                //           builder: (BuildContext context) => trems()
+                //       ));
+                //     }, child:  Text(
+                //       'Privacy & Policy ',
+                //       style:
+                //       TextStyle(fontSize: 17.0, color: Color(0xffF72B50)),
+                //     ),),
+                //   ],
+                // ),
                 //SizedBox
                 //Text
                 // SizedBox(width: 10), //SizedBox
@@ -1355,30 +1476,30 @@ getCity()async{
                 //Checkbox
               ], //<Widget>[]
             ),
-            if(widget.ccustomer!['is_newsletter'].toString()=='0')
-            Row(
-              children: <Widget>[
-                // SizedBox(
-                //   width: 10,
-                // ),
-                Checkbox(
-                  value: this.value1,
-                  onChanged: (value1) {
-                    setState(() {
-                      this.value1 = value1!;
-                      print(value1);
-                    });
-                  },
-                ), //SizedBox
-                Text(
-                  'Subscribe me for newsletter ',
-                  style: TextStyle(fontSize: 17.0, color: Color(0xff969BA0)),
-                ), //Text
-                SizedBox(width: 10), //SizedBox
-                /** Checkbox Widget **/
-                //Checkbox
-              ], //<Widget>[]
-            ),
+            if (widget.ccustomer!['is_newsletter'].toString() == '0')
+              Row(
+                children: <Widget>[
+                  // SizedBox(
+                  //   width: 10,
+                  // ),
+                  Checkbox(
+                    value: this.value1,
+                    onChanged: (value1) {
+                      setState(() {
+                        this.value1 = value1!;
+                        print(value1);
+                      });
+                    },
+                  ), //SizedBox
+                  Text(
+                    'Subscribe me for newsletter ',
+                    style: TextStyle(fontSize: 17.0, color: Color(0xff969BA0)),
+                  ), //Text
+                  SizedBox(width: 10), //SizedBox
+                  /** Checkbox Widget **/
+                  //Checkbox
+                ], //<Widget>[]
+              ),
 
             // RoundEdgedButtonred(text: 'Next', color: MyColors.primaryColor,),
             // vSizedBox2,
@@ -1443,7 +1564,7 @@ getCity()async{
             vSizedBox2,
             Container(
               decoration: BoxDecoration(
-                  color: MyColors.primaryColor,
+                  color: Color(0xff004173),
                   borderRadius: BorderRadius.circular(10)),
               child: ListTile(
                 onTap: () {
@@ -1471,8 +1592,6 @@ getCity()async{
               ),
             ),
             vSizedBox2,
-
-
 
             vSizedBox2,
             Container(
@@ -1625,7 +1744,7 @@ getCity()async{
                           Image.asset(
                             // 'assets/images/bank.png',
                             'assets/images/bank1.jpg',
-                            height:50,
+                            height: 50,
                             // color: payment == 'bank'?MyColors.primaryColor:MyColors.greyish,
                           ),
                           // vSizedBox,
@@ -1743,46 +1862,83 @@ getCity()async{
             //   fontSize: 7,
             //   color: Color(0xFF7A7A7A),),
             // color: _isVisible ? Color(0xFF1D1E33) : Colors.blue,
-
-            RoundEdgedButtonred(
+            // RoundEdgedButton(text: 'check',onTap: ()async{
+            //   var useridd;
+            //   if (await isUserLoggedIn()) {
+            //   useridd = await getCurrentUserId();
+            //   print("No need to login--------$useridd");
+            //   } else {
+            //   // useridd = user_id;
+            //   useridd = widget.ccustomer!['id'].toString();
+            //   print("try to login--------$useridd");
+            //       Map usersdata = await Webservices.getMap('${ApiUrls.getuserbyid}?user_id=$useridd');
+            //       print('res-usersdata---${usersdata}');
+            //       updateUserDetails(usersdata);
+            //
+            //   }
+            // },),
+            RoundEdgedButton(
+              boderRadius: 15,
+              textColor: Colors.white,
               text: 'CHECKOUT',
-              color: selectedIndex != '' || payment == 'paypal' || shippingcost!=0
-                  ? MyColors.primaryColor
+              color: selectedIndex != '' ||
+                      payment == 'paypal' ||
+                      shippingcost != 0
+                  ? Color(0xff00b7ff)
                   : MyColors.greyish,
               onTap: () async {
+                Address = '';
+                city = '';
+                state = '';
+                country = '';
+                zip = '';
+                lng = '';
+                latt = '';
+
+                for (int i = 0; i < Addresslist.length; i++) {
+                  if (Addresslist[i]['isSelected'] == true) {
+                    Address = Addresslist[i]['address'].toString();
+                    city = Addresslist[i]['city'].toString();
+                    state = Addresslist[i]['state'].toString();
+                    country = Addresslist[i]['country'].toString();
+                    zip = Addresslist[i]['zip'].toString();
+                    latt = Addresslist[i]['lat'].toString();
+                    lng = Addresslist[i]['lng'].toString();
+                    country = Addresslist[i]['country'].toString();
+                  }
+                }
                 String pattern =
                     r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$';
                 RegExp regex = new RegExp(pattern);
 
-                if (widget.ccustomer!['password_set'].toString()=='0'&& passwordController.text=='') {
+                if (widget.ccustomer!['password_set'].toString() == '0' &&
+                    passwordController.text == '') {
                   showSnackbar(context, 'Please Enter your Password.');
-                }
-                else if (!regex.hasMatch(passwordController.text)&&widget.ccustomer!['password_set'].toString()=='0') {
-                  showSnackbar(context, 'Password must have minimum letters one uppercase numbers and one special character.');
-                }
-                else if (passwordController.text!=reenterpasswordController.text) {
-                  showSnackbar(context, 'Password and Confirm Password should be same.');
-                }
-                else if (selectedIndexaddress == null || selectedIndexaddress == '') {
+                } else if (!regex.hasMatch(passwordController.text) &&
+                    widget.ccustomer!['password_set'].toString() == '0') {
+                  showSnackbar(context,
+                      'Password must have minimum letters one uppercase numbers and one special character.');
+                } else if (passwordController.text !=
+                    reenterpasswordController.text) {
+                  showSnackbar(
+                      context, 'Password and Confirm Password should be same.');
+                } else if (selectedIndexaddress == null ||
+                    selectedIndexaddress == '' ||
+                    Address == '') {
                   showSnackbar(context, 'Please Enter your Delivery Address.');
-                }
-
-                else if (value == false) {
+                } else if (value == false) {
                   showSnackbar(context, 'Please Accept Terms & Conditions');
-                }
-                else if (payment == null) {
+                } else if (payment == null) {
                   showSnackbar(context, 'Please select payment method');
-                }
-                else if (payment == 'paypal') {
+                } else if (payment == 'paypal') {
                   print('prasoon------paypal click--------');
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (BuildContext context) => UsePaypal(
                           sandboxMode: true,
-
                           clientId:
                               // "AW1TdvpSGbIM5iP4HJNI5TyTmwpY9Gv9dYw8_8yW5lYIbCqf326vrkrp0ce9TAqjEGMHiV3OqJM_aRT0",
-                                 "Aao36icN-9lT4ueBmET4KDvZBw6haWtk1jtMdYvkfhIF3JiByzx8nB-18a5_WPFlPEpgI90GX2X0f4cV",
+                              "Aao36icN-9lT4ueBmET4KDvZBw6haWtk1jtMdYvkfhIF3JiByzx8nB-18a5_WPFlPEpgI90GX2X0f4cV",
                           secretKey:
                               // "EHHtTDjnmTZATYBPiGzZC_AZUfMpMAzj2VZUeqlFUrRJA_C0pQNCxDccB5qoRQSEdcOnnKQhycuOWdP9",
                               "EKXaVthCUXqzu_6nSn-gxLVyO6j9tv9A0fsXzb7yGqyQnMCXL6RwSCESio1UYtjs9AzgMclXtE9RXP2X",
@@ -1791,7 +1947,7 @@ getCity()async{
                           transactions: [
                             {
                               "amount": {
-                                "total":sum,
+                                "total": sum,
                                 // "total": Grandtotal,
                                 "currency": "USD",
                                 "details": {
@@ -1811,7 +1967,8 @@ getCity()async{
                             // paymentId = params['paymentId'];
                             // paymentId = params['token'];
                             // paymentId = params['token'];
-                            paymentId = params['data']['transactions'][0]['related_resources'][0]['sale']['id'];
+                            paymentId = params['data']['transactions'][0]
+                                ['related_resources'][0]['sale']['id'];
                             onSuccessPaypal(params);
                             print('payment with paypal');
                           },
@@ -1823,16 +1980,15 @@ getCity()async{
                           }),
                     ),
                   );
-                }
-                else if (selectedIndex == '1' || selectedIndex == '2' || selectedIndex == '3') {
-                  var useridd;
+                } else if (selectedIndex == '1' ||
+                    selectedIndex == '2' ||
+                    selectedIndex == '3') {
+                  String useridd;
                   if (await isUserLoggedIn()) {
                     useridd = await getCurrentUserId();
                   } else {
                     // useridd = user_id;
                     useridd = widget.ccustomer!['id'].toString();
-
-
                   }
                   Map<String, dynamic> data = {
                     // "bANKID":selectedIndex,
@@ -1863,11 +2019,11 @@ getCity()async{
                     'bank': selectedIndex,
                     "cartItems": convert.jsonEncode(widget.carts)
                   };
-                  if(widget.ccustomer!['password_set'].toString()=='0'){
-                    data['password']=passwordController.text;
+                  if (widget.ccustomer!['password_set'].toString() == '0') {
+                    data['password'] = passwordController.text;
                   }
 
-                    // loadingShow(context);
+                  // loadingShow(context);
                   log('Dataforcheckout...........${data}');
 
                   loadingShow(context);
@@ -1881,14 +2037,54 @@ getCity()async{
                   orderid = res['order_id'].toString();
                   if (res['status'] == 1) {
                     loadingHide(context);
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ManageOrdersPage(
-                                orderData: res['data'] ?? {},
-                                orderid: orderid ?? '')));
-                     // newrp();
-                    setState((){});
+                    ///auto login
+                    // if(!await isUserLoggedIn()){
+                    //
+                    //   Map <String, dynamic> request = {
+                    //     'user_id':widget.ccustomer!['id'].toString(),
+                    //   };
+                    //   Map usersdata = await Webservices.getMap(ApiUrls.getuserbyid,request:request);
+                    //   print('res-usersdata---${usersdata}');
+                    //   updateUserDetails(usersdata);
+                    // }
+
+                    // updatedevice();
+
+                    // Navigator.pushNamed(context, MyStatefulWidget.id);
+
+                    ///
+                    if (await isUserLoggedIn()) {
+                      useridd = await getCurrentUserId();
+                      print("No need to login--------$useridd");
+                    } else {
+                      // useridd = user_id;
+                      useridd = widget.ccustomer!['id'].toString();
+                      print("try to login--------$useridd");
+                      Map usersdata = await Webservices.getMap('${ApiUrls.getuserbyid}?user_id=$useridd');
+                      print('res-usersdata---${usersdata}');
+                      updateUserDetails(usersdata);
+
+                    }
+                    // if(await isUserLoggedIn()){
+                    //   Navigator.pushReplacement(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //           builder: (context) => ManageOrdersPage(
+                    //               orderData: res['data'] ?? {},
+                    //               orderid: orderid ?? '')));
+                    // }
+                    // else{
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                          ManageOrdersPage(
+                              orderData: res['data'] ?? {},
+                              orderid: orderid ?? '')),
+                              (Route<dynamic> route) => false);
+                    // }
+
+
+
+                    // newrp();
+                    setState(() {});
 
                     await showDialog(
                       context: context,
@@ -1950,8 +2146,9 @@ getCity()async{
                                 vSizedBox,
                                 ElevatedButton(
                                   onPressed: () {
+                                    // push(context: context, screen: MyStatefulWidget(key: MyGlobalKeys.tabBarKey,));
                                     Navigator.pop(context);
-                                  },
+                                },
                                   child: Text('Ok'),
                                   style: ElevatedButton.styleFrom(
                                     shape: StadiumBorder(),
@@ -1974,9 +2171,11 @@ getCity()async{
               padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
               child: Row(
                 children: [
-                  Text(
-                    'If you need any support and help please click here',
-                    style: TextStyle(fontSize: 16, fontFamily: 'regular'),
+                  Expanded(
+                    child: Text(
+                      'If you need any support and help please click here',
+                      style: TextStyle(fontSize: 16, fontFamily: 'regular'),
+                    ),
                   ),
                 ],
               ),
@@ -1984,7 +2183,6 @@ getCity()async{
             Container(
               padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
               child: ElevatedButton(
-
                 child: Text(
                   "Ir a página de soporte",
                   style: TextStyle(fontSize: 15),
@@ -1997,13 +2195,11 @@ getCity()async{
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                    primary: MyColors.primaryColor,
+                    primary: Color(0xff004173),
 
                     // padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                    textStyle: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold)
-                ),
+                    textStyle:
+                        TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
                 // color: MyColors.primaryColor,
                 // textColor: MyColors.whiteColor,
                 // padding: EdgeInsets.all(0),
